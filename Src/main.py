@@ -1,6 +1,5 @@
 import fastf1
 import json
-import pandas as pd
 
 # Fetching race data
 fastf1.Cache.enable_cache('../Cache')
