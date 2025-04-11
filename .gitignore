@@ -3,3 +3,4 @@ Resources/*
 .DS_Store
 Blender/*.blend1
 venv/*
+**/__pycache__/*
