@@ -3,11 +3,11 @@ from db_writer import DatabaseWriter
 
 def main():
 
-    #car_data = ApiFetcher.get_car_data()
+    car_data = ApiFetcher.get_car_data()
     drivers_data = ApiFetcher.get_drivers()
-    #intervals_data = ApiFetcher.get_intervals()
+    intervals_data = ApiFetcher.get_intervals()
     laps_data = ApiFetcher.get_laps()
-    #locations_data = ApiFetcher.get_locations()
+    locations_data = ApiFetcher.get_locations()
     meetings_data = ApiFetcher.get_meetings()
     pits_data = ApiFetcher.get_pits()
     positions_data = ApiFetcher.get_positions()
@@ -17,11 +17,11 @@ def main():
     team_data = ApiFetcher.get_team_radio()
     weather_data = ApiFetcher.get_weather()
 
-    #DatabaseWriter.upsert_car_data(car_data)
+    DatabaseWriter.upsert_car_data(car_data)
     DatabaseWriter.upsert_drivers(drivers_data)
-    #DatabaseWriter.upsert_intervals(intervals_data)
+    DatabaseWriter.upsert_intervals(intervals_data)
     DatabaseWriter.upsert_laps(laps_data)
-    #DatabaseWriter.upsert_locations(locations_data)
+    DatabaseWriter.upsert_locations(locations_data)
     DatabaseWriter.upsert_meetings(meetings_data)
     DatabaseWriter.upsert_pits(pits_data)
     DatabaseWriter.upsert_positions(positions_data)
