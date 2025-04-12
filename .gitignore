@@ -4,3 +4,4 @@ Resources/*
 Blender/*.blend1
 venv/*
 **/__pycache__/*
+data/f1_data.db
