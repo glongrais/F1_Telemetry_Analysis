@@ -6,3 +6,15 @@ sources:
     schema: main
     tables:
       - name: meetings
+      - name: sessions
+      - name: positions
+      - name: laps
+      - name: car_data
+      - name: drivers
+      - name: intervals
+      - name: locations
+      - name: pits
+      - name: race_control
+      - name: stints
+      - name: team_radio
+      - name: weather
