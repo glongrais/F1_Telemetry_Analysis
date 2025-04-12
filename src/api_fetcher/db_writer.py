@@ -291,6 +291,29 @@ class DatabaseWriter:
 
         conn.commit()
         conn.close()
+
+    @classmethod
+    def upsert_team_radio(cls, data):
+        """
+        Inserts or updates team radio data into the database.
+        """
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        for radio in data:
+            cursor.execute('''
+            INSERT INTO team_radio (
+                date, driver_number, meeting_key, recording_url, session_key
+            )
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(date, driver_number, session_key) DO NOTHING
+            ''', (
+                radio['date'], radio['driver_number'], radio['meeting_key'],
+                radio['recording_url'], radio['session_key']
+            ))
+
+        conn.commit()
+        conn.close()
     
     @classmethod
     def upsert_weather(cls, data):

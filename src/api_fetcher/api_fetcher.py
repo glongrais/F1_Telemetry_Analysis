@@ -1,4 +1,7 @@
 import requests
+import sqlite3
+
+DB_PATH = '../../data/f1_data.db'
 
 class ApiFetcher:
 
@@ -9,7 +12,7 @@ class ApiFetcher:
         """
         api_url = "https://api.openf1.org/v1/car_data"
         response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for bad status codes
+        response.raise_for_status()
         return response.json()
     
     @classmethod
@@ -19,7 +22,7 @@ class ApiFetcher:
         """
         api_url = "https://api.openf1.org/v1/drivers"
         response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for bad status codes
+        response.raise_for_status()
         return response.json()
     
     @classmethod
@@ -29,7 +32,7 @@ class ApiFetcher:
         """
         api_url = "https://api.openf1.org/v1/intervals"
         response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for bad status codes
+        response.raise_for_status()
         return response.json()
     
     @classmethod
@@ -37,9 +40,9 @@ class ApiFetcher:
         """
         Fetches lap data from the OpenF1 API.
         """
-        api_url = "https://api.openf1.org/v1/laps"
+        api_url = "https://api.openf1.org/v1/laps?meeting_key<=1230&meeting_key>1220"
         response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for bad status codes
+        response.raise_for_status()
         return response.json()
 
     @classmethod
@@ -49,7 +52,7 @@ class ApiFetcher:
         """
         api_url = "https://api.openf1.org/v1/location"
         response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for bad status codes
+        response.raise_for_status()
         return response.json()
 
     @classmethod
@@ -69,7 +72,7 @@ class ApiFetcher:
         """
         api_url = "https://api.openf1.org/v1/pit"
         response = requests.get(api_url)
-        response.raise_for_status()  # Raise an error for bad status codes
+        response.raise_for_status()
         return response.json()
     
     @classmethod
@@ -77,7 +80,7 @@ class ApiFetcher:
         """
         Fetches position data from the OpenF1 API.
         """
-        api_url = "https://api.openf1.org/v1/position"
+        api_url = "https://api.openf1.org/v1/position?meeting_key<=1230&meeting_key>1220"
         response = requests.get(api_url)
         response.raise_for_status()  # Raise an error for bad status codes
         return response.json()
@@ -108,6 +111,16 @@ class ApiFetcher:
         Fetches stints data from the OpenF1 API.
         """
         api_url = "https://api.openf1.org/v1/stints"
+        response = requests.get(api_url)
+        response.raise_for_status()
+        return response.json()
+
+    @classmethod
+    def get_team_radio(cls):
+        """
+        Fetches team radio data from the OpenF1 API.
+        """
+        api_url = "https://api.openf1.org/v1/team_radio"
         response = requests.get(api_url)
         response.raise_for_status()
         return response.json()
