@@ -1,0 +1,28 @@
+
+version: 2
+
+models:
+  - name: core__sessions_context
+    description: "Sessions context table mostly used for batch downloads"
+    columns:
+      - name: session_key
+        description: "The unique identifier for a session"
+        type: integer
+        data_tests:
+          - unique
+          - not_null
+      - name: date_start
+        description: "The start date of the session"
+        type: string
+        data_tests:
+          - not_null
+      - name: date_end
+        description: "The end date of the session"
+        type: string
+        data_tests:
+          - not_null
+      - name: driver_numbers
+        description: "The driver numbers associated with the session"
+        type: string
+        data_tests:
+          - not_null
