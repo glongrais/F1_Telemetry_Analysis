@@ -16,14 +16,16 @@ class ApiFetcher:
             return response.json()
         except requests.exceptions.RequestException as e:
             print(f"Error fetching data from {api_url}: {e}")
+            with open("failed_api_calls.txt", "a") as file:
+                file.write(f"{api_url}\n")
             return []
 
     @classmethod
-    def get_car_data(cls):
+    def get_car_data(cls, params=""):
         """
         Fetches car data from the OpenF1 API.
         """
-        api_url = "https://api.openf1.org/v1/car_data"
+        api_url = "https://api.openf1.org/v1/car_data" + params
         return cls.fetch_data(api_url)
 
     @classmethod
@@ -39,15 +41,15 @@ class ApiFetcher:
         """
         Fetches interval data from the OpenF1 API.
         """
-        api_url = "https://api.openf1.org/v1/intervals"
+        api_url = "https://api.openf1.org/v1/intervals+"
         return cls.fetch_data(api_url)
 
     @classmethod
-    def get_laps(cls):
+    def get_laps(cls, params=""):
         """
         Fetches lap data from the OpenF1 API.
         """
-        api_url = "https://api.openf1.org/v1/laps"
+        api_url = "https://api.openf1.org/v1/laps" + params
         return cls.fetch_data(api_url)
 
     @classmethod
@@ -75,11 +77,11 @@ class ApiFetcher:
         return cls.fetch_data(api_url)
 
     @classmethod
-    def get_positions(cls):
+    def get_positions(cls, params=""):
         """
         Fetches position data from the OpenF1 API.
         """
-        api_url = "https://api.openf1.org/v1/position"
+        api_url = "https://api.openf1.org/v1/position" + params
         return cls.fetch_data(api_url)
 
     @classmethod
@@ -121,3 +123,31 @@ class ApiFetcher:
         """
         api_url = "https://api.openf1.org/v1/weather"
         return cls.fetch_data(api_url)
+    
+    @classmethod
+    def get_sessions_context(cls):
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM core__sessions_context")
+        sessions_context = cursor.fetchall()
+        conn.close()
+        for i in range(len(sessions_context)):
+            s = list(sessions_context[i]) 
+            s[-1] = s[-1].split(',')
+            sessions_context[i] = s
+        return sessions_context
+    
+    @classmethod
+    def get_watermarks(cls):
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM watermarks")
+        answers = cursor.fetchall()
+        conn.close()
+
+        watermarks = {}
+        for answer in answers:
+            watermarks[answer[0]] = (answer[1], answer[2])
+        return watermarks
