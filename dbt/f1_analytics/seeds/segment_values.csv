@@ -1,0 +1,9 @@
+segment_value, interpretation
+0, not_available
+2048, yellow_sector
+2049, green_sector
+2050, ?
+2051, purple_sector
+2052, ?
+2064, pitlane
+2068, ?

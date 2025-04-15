@@ -1,0 +1,21 @@
+version: 2
+
+seeds:
+  - name: drs_values
+    description: "Seed data for DRS value"
+    columns:
+      - name: drs_value
+        description: "The DRS value"
+        type: integer
+      - name: interpretation
+        description: "The interpretation of the DRS value"
+        type: string
+  - name: segments_values
+    description: "Seed data for segments value"
+    columns:
+      - name: segments_value
+        description: "The segments value"
+        type: integer
+      - name: interpretation
+        description: "The interpretation of the segments value"
+        type: string
