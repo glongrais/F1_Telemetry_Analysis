@@ -3,7 +3,7 @@ import sqlite3
 
 DB_PATH = '../../data/f1_data.db'
 
-class ApiFetcher:
+class Api:
 
     @classmethod
     def fetch_data(cls, api_url):
