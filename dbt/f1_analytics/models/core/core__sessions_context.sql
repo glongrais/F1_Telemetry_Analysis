@@ -15,7 +15,8 @@ SELECT
     s.session_key,
     s.date_start,
     s.date_end,
-    dps.driver_numbers
+    s.session_type,
+    COALESCE(dps.driver_numbers, '') AS driver_numbers
 FROM sessions s
 LEFT JOIN drivers_per_session dps
     ON s.session_key = dps.session_key

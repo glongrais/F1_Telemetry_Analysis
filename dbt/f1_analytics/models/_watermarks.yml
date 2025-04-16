@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: watermarks
+    description: |
+      This table is used to track the last updates of the source tables.
+      It is used to determine if the source data has changed since the last run.
+    columns:
+      - name: table_name
+        description: The name of the source table.
+      - name: meeting_key
+        description: The unique identifier for the last updated meeting.
+        data_tests:
+          - not_null
+      - name: session_key
+        description: The unique identifier for the last updated session.
+        data_tests:
+          - not_null
+      - name: driver_number
+        description: The number of the last updated driver.
+        data_tests:
+          - not_null
