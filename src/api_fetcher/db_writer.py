@@ -6,6 +6,25 @@ DB_PATH = '../../data/f1_data.db'
 class DatabaseWriter:
 
     @classmethod
+    def upsert_data(cls, endpoint, data):
+        table_methods = {
+            "meetings": cls.upsert_meetings,
+            "car_data": cls.upsert_car_data,
+            "drivers": cls.upsert_drivers,
+            "intervals": cls.upsert_intervals,
+            "laps": cls.upsert_laps,
+            "locations": cls.upsert_locations,
+            "pits": cls.upsert_pits,
+            "positions": cls.upsert_positions,
+            "race_control": cls.upsert_race_control,
+            "sessions": cls.upsert_sessions,
+            "stints": cls.upsert_stints,
+            "team_radio": cls.upsert_team_radio,
+            "weather": cls.upsert_weather,
+        }
+        table_methods[endpoint](data)
+
+    @classmethod
     def upsert_car_data(cls, data):
         """
         Inserts or updates car data into the database.
