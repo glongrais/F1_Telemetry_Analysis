@@ -50,7 +50,7 @@ class Fetcher:
             sessions_context = Api.get_sessions_context()
             print(f"Fetching data for endpoint: {endpoint}")
 
-            if endpoint not in ["car_data", "laps", "intervals", "locations", "positions"]:
+            if endpoint not in ["car_data", "intervals", "locations", "positions"]:
                 # Fetch data for endpoints that do not require batching
                 params = f"?meeting_key>={watermarks[endpoint][0]}"
                 data = method(params)
