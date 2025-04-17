@@ -31,3 +31,17 @@ class DatabaseReader:
         for answer in answers:
             watermarks[answer[0]] = (answer[1], answer[2], answer[3])
         return watermarks
+    
+    @classmethod
+    def get_failed_queries(cls):
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM failed_queries")
+        answers = cursor.fetchall()
+        conn.close()
+
+        failed_queries = {}
+        for answer in answers:
+            failed_queries[answer[0]] = (answer[1], answer[2])
+        return failed_queries

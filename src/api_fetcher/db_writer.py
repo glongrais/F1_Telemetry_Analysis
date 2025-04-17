@@ -372,3 +372,18 @@ class DatabaseWriter:
 
         conn.commit()
         conn.close()
+    
+    @classmethod
+    def delete_failed_query(cls, id):
+        """
+        Deletes failed query from the database.
+        """
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+        DELETE FROM failed_queries WHERE query_id=?
+        ''', (id,))
+
+        conn.commit()
+        conn.close()

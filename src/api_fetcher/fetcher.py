@@ -1,3 +1,4 @@
+from time import sleep
 from api import Api
 from db_writer import DatabaseWriter
 from db_reader import DatabaseReader
@@ -97,5 +98,20 @@ class Fetcher:
                 end_time = start_time + batch_duration
     
     @classmethod
-    def retry_fetch_failed_url(cls):
-        return
+    def retry_fetch_failed_queries(cls):
+        failed_queries = DatabaseReader.get_failed_queries()
+        nb_failed_queries = len(failed_queries)
+        count = 1
+        for id in failed_queries:
+            endpoint_name = failed_queries[id][0]
+            api_url = failed_queries[id][1]
+            data = Api.fetch_data(api_url, endpoint_name=endpoint_name)
+            if data:
+                DatabaseWriter.upsert_data(endpoint_name, data)
+                DatabaseWriter.delete_failed_query(id)
+                print(f"{count}/{nb_failed_queries} Successfully retried and inserted data for {endpoint_name}: {api_url}")
+            else:
+                DatabaseWriter.delete_failed_query(id)
+                print(f"{count}/{nb_failed_queries} Failed to fetch data again for {endpoint_name}: {api_url}")
+            count += 1
+            sleep(0.1)  # Sleep for 0.1 second to avoid overwhelming the API
