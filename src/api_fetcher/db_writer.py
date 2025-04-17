@@ -356,3 +356,19 @@ class DatabaseWriter:
 
         conn.commit()
         conn.close()
+
+    @classmethod
+    def insert_failed_query(cls, endpoint_name, api_url):
+        """
+        Inserts failed query into the database.
+        """
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+        INSERT INTO failed_queries (endpoint_name, query)
+        VALUES (?, ?)
+        ''', (endpoint_name, api_url))
+
+        conn.commit()
+        conn.close()

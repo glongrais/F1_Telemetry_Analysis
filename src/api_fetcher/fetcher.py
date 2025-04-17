@@ -1,5 +1,6 @@
 from api import Api
 from db_writer import DatabaseWriter
+from db_reader import DatabaseReader
 from datetime import datetime, timedelta
 
 SESSION_KEY = 0
@@ -44,10 +45,10 @@ class Fetcher:
         }
 
         # Example: Fetch watermarks and session context
-        watermarks = Api.get_watermarks()
+        watermarks = DatabaseReader.get_watermarks()
 
         for endpoint, method in endpoint_methods.items():
-            sessions_context = Api.get_sessions_context()
+            sessions_context = DatabaseReader.get_sessions_context()
             print(f"Fetching data for endpoint: {endpoint}")
 
             if endpoint not in ["car_data", "intervals", "locations", "positions"]:
