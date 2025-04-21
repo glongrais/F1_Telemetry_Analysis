@@ -1,12 +1,26 @@
 import sqlite3
+import duckdb
 
-DB_PATH = '../../data/f1_data.db'
+DB_PATH_SQLITE = '../../data/f1_data.db'
+DB_PATH_DUCKDB = '../../data/f1_data.duckdb'
 
 class DatabaseReader:
 
     @classmethod
-    def get_sessions_context(cls):
-        conn = sqlite3.connect(DB_PATH)
+    def get_connection(cls, db_type):
+        """
+        Returns a database connection for the specified database type.
+        """
+        if db_type == "sqlite":
+            return sqlite3.connect(DB_PATH_SQLITE)
+        elif db_type == "duckdb":
+            return duckdb.connect(DB_PATH_DUCKDB)
+        else:
+            raise ValueError(f"Unsupported database type: {db_type}")
+
+    @classmethod
+    def get_sessions_context(cls, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
         cursor = conn.cursor()
 
         cursor.execute("SELECT * FROM core__sessions_context")
@@ -19,8 +33,8 @@ class DatabaseReader:
         return sessions_context
     
     @classmethod
-    def get_watermarks(cls):
-        conn = sqlite3.connect(DB_PATH)
+    def get_watermarks(cls, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
         cursor = conn.cursor()
 
         cursor.execute("SELECT * FROM watermarks")
@@ -33,8 +47,8 @@ class DatabaseReader:
         return watermarks
     
     @classmethod
-    def get_failed_queries(cls):
-        conn = sqlite3.connect(DB_PATH)
+    def get_failed_queries(cls, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
         cursor = conn.cursor()
 
         cursor.execute("SELECT * FROM failed_queries")

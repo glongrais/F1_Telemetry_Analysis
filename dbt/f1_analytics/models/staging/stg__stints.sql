@@ -1,5 +1,5 @@
 WITH stints AS (
-    SELECT * FROM {{ source('sqlite', 'stints') }}
+    SELECT * FROM {{ source('f1_data', 'stints') }}
 )
 
 SELECT

@@ -1,5 +1,5 @@
 WITH locations AS (
-    SELECT * FROM {{ source('sqlite', 'locations') }}
+    SELECT * FROM {{ source('f1_data', 'locations') }}
 )
 
 SELECT

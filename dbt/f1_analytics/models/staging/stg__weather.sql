@@ -1,5 +1,5 @@
 WITH weather AS (
-    SELECT * FROM {{ source('sqlite', 'weather') }}
+    SELECT * FROM {{ source('f1_data', 'weather') }}
 )
 
 SELECT

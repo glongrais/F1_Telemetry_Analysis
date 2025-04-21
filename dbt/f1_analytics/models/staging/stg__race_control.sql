@@ -1,5 +1,5 @@
 WITH race_control AS (
-    SELECT * FROM {{ source('sqlite', 'race_control') }}
+    SELECT * FROM {{ source('f1_data', 'race_control') }}
 )
 
 SELECT

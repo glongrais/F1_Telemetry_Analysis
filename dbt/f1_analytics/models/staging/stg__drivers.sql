@@ -1,5 +1,5 @@
 WITH drivers AS (
-    SELECT * FROM {{ source('sqlite', 'drivers') }}
+    SELECT * FROM {{ source('f1_data', 'drivers') }}
 )
 
 SELECT

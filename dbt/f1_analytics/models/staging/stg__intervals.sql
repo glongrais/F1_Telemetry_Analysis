@@ -1,5 +1,5 @@
 WITH intervals AS (
-    SELECT * FROM {{ source('sqlite', 'intervals') }}
+    SELECT * FROM {{ source('f1_data', 'intervals') }}
 )
 
 SELECT

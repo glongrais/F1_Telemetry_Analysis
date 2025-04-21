@@ -1,8 +1,8 @@
 version: 2
 
 sources:
-  - name: sqlite
-    database: sqlite
+  - name: f1_data
+    database: f1_data
     schema: main
     tables:
       - name: meetings
