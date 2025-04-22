@@ -59,3 +59,29 @@ class DatabaseReader:
         for answer in answers:
             failed_queries[answer[0]] = (answer[1], answer[2])
         return failed_queries
+    
+    @classmethod
+    def get_downloader_watermark(cls, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM downloader_watermark")
+        answer = cursor.fetchone()
+        conn.close()
+
+        return answer[0]
+    
+    @classmethod
+    def get_team_radios(cls, team_radio_watermark=0, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM team_radio WHERE team_radio_id > ?", (team_radio_watermark,))
+        answers = cursor.fetchall()
+        conn.close()
+
+        team_radios = {}
+        for answer in answers:
+            team_radios[answer[5]] = (answer[0], answer[1], answer[2], answer[3], answer[4])
+
+        return team_radios

@@ -60,7 +60,8 @@ class Fetcher:
             else:
                 # Fetch data in batches for endpoints that require batching
                 for session in sessions_context:
-                    if session[SESSION_KEY] < watermarks[endpoint][1]:
+                    # CANT'T BE USE DURING A SESSION
+                    if session[SESSION_KEY] <= watermarks[endpoint][1]:
                         continue
                     
                     # Special case for intervals where no data is recorded outside of races

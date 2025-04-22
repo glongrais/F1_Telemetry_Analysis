@@ -407,3 +407,60 @@ class DatabaseWriter:
 
         conn.commit()
         conn.close()
+
+    @classmethod
+    def insert_failed_download(cls, item_id, url, db_type="duckdb"):
+        """
+        Inserts failed query into the database.
+        """
+        conn = cls.get_connection(db_type)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+        INSERT INTO failed_downloads (item_id, url)
+        VALUES (?, ?)
+        ''', (item_id, url))
+
+        conn.commit()
+        conn.close()
+    
+    @classmethod
+    def delete_failed_download(cls, id, db_type="duckdb"):
+        """
+        Deletes failed query from the database.
+        """
+        conn = cls.get_connection(db_type)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+        DELETE FROM failed_downloads WHERE download_id=?
+        ''', (id,))
+
+        conn.commit()
+        conn.close()
+
+    @classmethod
+    def update_downloader_watermark(cls, watermark, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+        UPDATE downloader_watermark SET watermark=? WHERE rowid=0
+        ''', (watermark,))
+
+        conn.commit()
+        conn.close()
+
+    @classmethod
+    def upsert_team_radio_file(cls, team_radio_id, file_path, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+        INSERT INTO team_radio_files (team_radio_id, team_radio_file)
+        VALUES (?, ?)
+        ON CONFLICT(team_radio_id) DO NOTHING
+        ''', (team_radio_id, file_path))
+
+        conn.commit()
+        conn.close()
