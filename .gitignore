@@ -6,3 +6,4 @@ venv/*
 **/__pycache__/*
 data/f1_data.db
 data/*
+src/api_fetcher/models/*

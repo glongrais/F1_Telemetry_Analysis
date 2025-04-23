@@ -85,3 +85,18 @@ class DatabaseReader:
             team_radios[answer[5]] = (answer[0], answer[1], answer[2], answer[3], answer[4])
 
         return team_radios
+    
+    @classmethod
+    def get_team_radio_files(cls, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM team_radio_files")
+        answers = cursor.fetchall()
+        conn.close()
+
+        team_radio_files = []
+        for answer in answers:
+            team_radio_files.append(answer[2])
+
+        return team_radio_files
