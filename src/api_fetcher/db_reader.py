@@ -97,6 +97,6 @@ class DatabaseReader:
 
         team_radio_files = []
         for answer in answers:
-            team_radio_files.append(answer[2])
+            team_radio_files.append((answer[0], answer[1], answer[2]))
 
         return team_radio_files

@@ -464,3 +464,16 @@ class DatabaseWriter:
 
         conn.commit()
         conn.close()
+    
+    @classmethod
+    def insert_team_radio_text(cls, team_radio_file_id, team_radio_id, text, db_type="duckdb"):
+        conn = cls.get_connection(db_type)
+        cursor = conn.cursor()
+
+        cursor.execute('''
+        INSERT INTO team_radio_texts (team_radio_file_id, team_radio_id, transcription)
+        VALUES (?, ?, ?)
+        ''', (team_radio_file_id, team_radio_id, text))
+
+        conn.commit()
+        conn.close()
