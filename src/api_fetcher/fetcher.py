@@ -3,6 +3,7 @@ from api import Api
 from db_writer import DatabaseWriter
 from db_reader import DatabaseReader
 from datetime import datetime, timedelta
+from tqdm import tqdm
 
 SESSION_KEY = 0
 DATE_START = 1
@@ -77,7 +78,7 @@ class Fetcher:
         """
         batch_duration = timedelta(hours=1)  # One-hour batches
 
-        for driver_number in session[DRIVER_NUMBERS]:
+        for driver_number in tqdm(session[DRIVER_NUMBERS], desc=f"Processing drivers for session {session[SESSION_KEY]}"):
             if session[SESSION_KEY] == watermarks[endpoint][1] and int(driver_number) < watermarks[endpoint][2]:
                 continue
             start_time = datetime.fromisoformat(session[DATE_START]) - timedelta(minutes=30)
@@ -90,9 +91,9 @@ class Fetcher:
                 data = method(params=params)
                 if data:
                     DatabaseWriter.upsert_data(endpoint, data)
-                    print(f"Inserted {endpoint} data for session={session[SESSION_KEY]}, driver_number={driver_number}, time range={start_time} to {end_time}.")
-                else:
-                    print(f"No {endpoint} data found for session={session[SESSION_KEY]}, driver_number={driver_number}, time range={start_time} to {end_time}.")
+                    #print(f"Inserted {endpoint} data for session={session[SESSION_KEY]}, driver_number={driver_number}, time range={start_time} to {end_time}.")
+                #else:
+                    #print(f"No {endpoint} data found for session={session[SESSION_KEY]}, driver_number={driver_number}, time range={start_time} to {end_time}.")
 
                 # Move to the next batch
                 start_time = end_time

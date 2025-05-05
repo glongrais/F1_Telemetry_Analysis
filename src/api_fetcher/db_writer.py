@@ -25,12 +25,12 @@ class DatabaseWriter:
             "team_radio": cls.upsert_team_radio,
             "weather": cls.upsert_weather,
         }
-        upsert_method = table_methods[endpoint]
+        table_methods[endpoint](data, "duckdb")
 
         # Use ThreadPoolExecutor to run upserts in parallel
-        with ThreadPoolExecutor() as executor:
-            executor.submit(upsert_method, data, "sqlite")
-            executor.submit(upsert_method, data, "duckdb")
+        #with ThreadPoolExecutor() as executor:
+        #    executor.submit(upsert_method, data, "sqlite")
+        #    executor.submit(upsert_method, data, "duckdb")
 
     @classmethod
     def get_connection(cls, db_type):
