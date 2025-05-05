@@ -104,16 +104,16 @@ class Fetcher:
         failed_queries = DatabaseReader.get_failed_queries()
         nb_failed_queries = len(failed_queries)
         count = 1
-        for id in failed_queries:
+        for id in tqdm(failed_queries, desc="Retrying failed queries"):
             endpoint_name = failed_queries[id][0]
             api_url = failed_queries[id][1]
             data = Api.fetch_data(api_url, endpoint_name=endpoint_name)
             if data:
                 DatabaseWriter.upsert_data(endpoint_name, data)
                 DatabaseWriter.delete_failed_query(id)
-                print(f"{count}/{nb_failed_queries} Successfully retried and inserted data for {endpoint_name}: {api_url}")
+                #print(f"{count}/{nb_failed_queries} Successfully retried and inserted data for {endpoint_name}: {api_url}")
             else:
                 DatabaseWriter.delete_failed_query(id)
-                print(f"{count}/{nb_failed_queries} Failed to fetch data again for {endpoint_name}: {api_url}")
+                #print(f"{count}/{nb_failed_queries} Failed to fetch data again for {endpoint_name}: {api_url}")
             count += 1
             sleep(0.1)  # Sleep for 0.1 second to avoid overwhelming the API
