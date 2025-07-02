@@ -18,3 +18,5 @@ sources:
       - name: stints
       - name: team_radio
       - name: weather
+      - name: team_radio_files
+      - name: team_radio_texts

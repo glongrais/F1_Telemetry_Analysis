@@ -91,7 +91,7 @@ class DatabaseReader:
         conn = cls.get_connection(db_type)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM team_radio_files")
+        cursor.execute("SELECT * FROM team_radio_watermark")
         answers = cursor.fetchall()
         conn.close()
 

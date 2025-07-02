@@ -268,7 +268,7 @@ class DatabaseWriter:
                 meeting_key, message, scope, sector, session_key
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(date, category, message) DO NOTHING
+            ON CONFLICT(race_control_id, date, category, message) DO NOTHING
             ''', (
                 event['category'], event['date'], event['driver_number'],
                 event['flag'], event['lap_number'], event['meeting_key'],
