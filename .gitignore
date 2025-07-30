@@ -7,3 +7,4 @@ venv/*
 data/f1_data.db
 data/*
 src/api_fetcher/models/*
+.venv/*
