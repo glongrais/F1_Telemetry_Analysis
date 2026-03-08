@@ -1,0 +1,188 @@
+version: 2
+
+models:
+  - name: int__fastest_laps
+    description: Identifies the fastest lap in each race session.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: fastest_lap_time
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: lap_number
+        data_tests:
+          - not_null
+
+  - name: int__pit_stops
+    description: Pit stop events extracted from lap data.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: lap_number
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - session_id
+            - driver_number
+            - lap_number
+
+  - name: int__stints
+    description: Tyre stints aggregated from lap data.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: stint
+        data_tests:
+          - not_null
+      - name: compound
+        data_tests:
+          - accepted_values:
+              values: ['SOFT', 'MEDIUM', 'HARD', 'INTERMEDIATE', 'WET', 'UNKNOWN', 'TEST_UNKNOWN', 'None']
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - session_id
+            - driver_number
+            - stint
+
+  - name: int__race_results
+    description: One row per driver per race with positions, points, and status.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null
+      - name: round_number
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - session_id
+            - driver_number
+
+  - name: int__qualifying_results
+    description: One row per driver per qualifying session.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null
+      - name: session_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['Qualifying', 'Sprint Qualifying', 'Sprint Shootout']
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - session_id
+            - driver_number
+
+  - name: int__tyre_degradation
+    description: Per-lap tyre degradation within stints.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: lap_number
+        data_tests:
+          - not_null
+      - name: stint
+        data_tests:
+          - not_null
+      - name: lap_time
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - session_id
+            - driver_number
+            - lap_number
+
+  - name: int__race_control_incidents
+    description: Race control messages classified by incident type.
+    columns:
+      - name: race_control_id
+        data_tests:
+          - not_null
+          - unique
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: incident_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - SAFETY_CAR
+                - VIRTUAL_SAFETY_CAR
+                - RED_FLAG
+                - DRS_ENABLED
+                - DRS_DISABLED
+                - PENALTY
+                - INVESTIGATION
+                - TRACK_LIMITS
+                - WARNING
+                - YELLOW_FLAG
+                - GREEN_FLAG
+                - BLUE_FLAG
+                - CHEQUERED_FLAG
+                - OTHER
+
+  - name: int__weather_summary
+    description: Aggregated weather conditions per session.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - unique
+      - name: year
+        data_tests:
+          - not_null
+      - name: session_weather_class
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['DRY', 'WET']
+
+  - name: int__gap_analysis
+    description: Interval data enriched with position changes and gap deltas.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: timestamp
+        data_tests:
+          - not_null
