@@ -1,0 +1,7 @@
+fastf1
+duckdb
+pandas
+numpy
+tqdm
+requests
+mlx_whisper
