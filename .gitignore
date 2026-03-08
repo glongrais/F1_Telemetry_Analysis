@@ -12,3 +12,4 @@ dbt/logs/*
 dbt/f1_analytics/target/*
 .claude/
 .venv/*
+/logs
