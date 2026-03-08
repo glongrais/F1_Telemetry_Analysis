@@ -1,0 +1,95 @@
+version: 2
+
+models:
+  - name: mart__driver_standings
+    description: Cumulative championship standings per driver per race.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null
+      - name: round_number
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: championship_position
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - year
+            - round_number
+            - driver_number
+
+  - name: mart__constructor_standings
+    description: Cumulative constructor championship standings per team per race.
+    columns:
+      - name: year
+        data_tests:
+          - not_null
+      - name: round_number
+        data_tests:
+          - not_null
+      - name: team_id
+        data_tests:
+          - not_null
+      - name: constructor_championship_position
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - year
+            - round_number
+            - team_id
+
+  - name: mart__head_to_head
+    description: Teammate qualifying and race comparison per round.
+    columns:
+      - name: year
+        data_tests:
+          - not_null
+      - name: round_number
+        data_tests:
+          - not_null
+      - name: team_id
+        data_tests:
+          - not_null
+      - name: driver_1_number
+        data_tests:
+          - not_null
+      - name: driver_2_number
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - year
+            - round_number
+            - team_id
+            - driver_1_number
+            - driver_2_number
+
+  - name: mart__track_characteristics
+    description: Circuit characteristics and statistics per race per year.
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - unique
+      - name: year
+        data_tests:
+          - not_null
+      - name: location
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - year
+            - location
