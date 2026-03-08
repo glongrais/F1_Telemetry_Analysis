@@ -6,5 +6,9 @@ venv/*
 **/__pycache__/*
 data/f1_data.db
 data/*
-src/api_fetcher/models/*
+src/fastf1_fetcher/models/*
+src/fastf1_fetcher/mlx_models/*
+dbt/logs/*
+dbt/f1_analytics/target/*
+.claude/
 .venv/*
