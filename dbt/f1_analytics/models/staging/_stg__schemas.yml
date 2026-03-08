@@ -1,0 +1,173 @@
+version: 2
+
+models:
+  - name: stg__events
+    columns:
+      - name: event_id
+        data_tests:
+          - not_null
+          - unique
+      - name: year
+        data_tests:
+          - not_null
+      - name: round_number
+        data_tests:
+          - not_null
+
+  - name: stg__sessions
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - unique
+      - name: event_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__events')
+              field: event_id
+      - name: year
+        data_tests:
+          - not_null
+      - name: session_type
+        data_tests:
+          - not_null
+
+  - name: stg__drivers
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__sessions')
+              field: session_id
+      - name: driver_number
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - session_id
+            - driver_number
+
+  - name: stg__laps
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__sessions')
+              field: session_id
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: lap_number
+        data_tests:
+          - not_null
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - session_id
+            - driver_number
+            - lap_number
+
+  - name: stg__race_control
+    columns:
+      - name: race_control_id
+        data_tests:
+          - not_null
+          - unique
+      - name: session_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__sessions')
+              field: session_id
+
+  - name: stg__weather
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__sessions')
+              field: session_id
+      - name: timestamp
+        data_tests:
+          - not_null
+
+  - name: stg__intervals
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__sessions')
+              field: session_id
+      - name: driver_number
+        data_tests:
+          - not_null
+      - name: timestamp
+        data_tests:
+          - not_null
+
+  - name: stg__car_data
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+
+  - name: stg__locations
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+      - name: driver_number
+        data_tests:
+          - not_null
+
+  - name: stg__session_status
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__sessions')
+              field: session_id
+
+  - name: stg__track_status
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__sessions')
+              field: session_id
+
+  - name: stg__team_radio
+    columns:
+      - name: session_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__sessions')
+              field: session_id
+
+  - name: stg__team_radio_files
+    columns:
+      - name: team_radio_file_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: stg__team_radio_texts
+    columns:
+      - name: team_radio_file_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('stg__team_radio_files')
+              field: team_radio_file_id
