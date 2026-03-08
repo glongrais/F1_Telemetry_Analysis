@@ -7,16 +7,16 @@ laps_session_type AS (
         l.*,
         s.session_type
     FROM laps l
-    LEFT JOIN sessions s ON l.session_key = s.session_key
+    LEFT JOIN sessions s ON l.session_id = s.session_id
 ),
 
 fastest_laps AS (
     SELECT
-        session_key,
-        min(lap_duration) AS fastest_lap_time
+        session_id,
+        min(lap_time) AS fastest_lap_time
     FROM laps_session_type
-    WHERE session_type == 'Race'
-    GROUP BY session_key
+    WHERE session_type = 'Race'
+    GROUP BY session_id
 )
 
 SELECT
@@ -24,5 +24,5 @@ SELECT
     f.fastest_lap_time
 FROM fastest_laps f
 LEFT JOIN laps l
-    ON l.session_key = f.session_key
-    AND l.lap_duration = f.fastest_lap_time
+    ON l.session_id = f.session_id
+    AND l.lap_time = f.fastest_lap_time

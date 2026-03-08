@@ -3,15 +3,14 @@ version: 2
 models:
   - name: int__fastest_laps
     description: |
-      This model is used to track the fastest laps of each driver in each session.
-      It is used to determine the fastest lap of each driver in each session.
+      This model identifies the fastest lap in each race session.
     columns:
-      - name: session_key
+      - name: session_id
         description: The unique identifier for the session.
         data_tests:
           - not_null
       - name: fastest_lap_time
-        description: The time of the fastest lap.
+        description: The time of the fastest lap in seconds.
         data_tests:
           - not_null
       - name: driver_number

@@ -2,21 +2,21 @@ version: 2
 
 sources:
   - name: f1_data
-    database: f1_data
+    database: f1_data_v2
     schema: main
     tables:
-      - name: meetings
+      - name: events
       - name: sessions
-      - name: positions
+      - name: drivers
       - name: laps
       - name: car_data
-      - name: drivers
-      - name: intervals
       - name: locations
-      - name: pits
-      - name: race_control
-      - name: stints
-      - name: team_radio
+      - name: intervals
       - name: weather
+      - name: race_control
+      - name: session_status
+      - name: track_status
+      - name: team_radio
       - name: team_radio_files
       - name: team_radio_texts
+      - name: ingestion_log
