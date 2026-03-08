@@ -50,13 +50,12 @@ python main.py --start-year 2018 --end-year 2023 --skip-radio --workers 4
 
 ---
 
-## 4. Commit and Clean Up
+## 4. Commit and Clean Up ✅
 
-- [ ] Review all changes with `git diff`
-- [ ] Remove `src/api_fetcher/` if not already deleted
-- [ ] Commit the new `src/fastf1_fetcher/` module, updated dbt models, and schema
-- [ ] Delete any leftover temp files or test databases
-- [ ] Update top-level README if it references the old API fetcher
+- Committed all changes across 5 logical commits on `fetcher-switch` branch
+- Removed `src/api_fetcher/`
+- Updated `.gitignore` (mlx_models, dbt logs, claude config)
+- Rewrote `README.md` with current architecture and usage
 
 ---
 
