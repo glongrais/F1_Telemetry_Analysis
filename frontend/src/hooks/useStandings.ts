@@ -5,8 +5,7 @@ import {
   fetchDriverStandingsEvolution,
   fetchConstructorStandingsEvolution,
 } from "@/lib/api";
-import type { Driver, Constructor } from "@/data/mockData";
-import type { StandingsPoint } from "@/data/standingsEvolution";
+import type { Driver, Constructor, StandingsPoint } from "@/types/standings";
 
 export function useDriverStandings(year: number) {
   return useQuery<Driver[]>({

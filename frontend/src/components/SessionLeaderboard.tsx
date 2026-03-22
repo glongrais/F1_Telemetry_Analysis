@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { SessionEntry } from "@/data/mockData";
+import { SessionEntry } from "@/types/standings";
 import TeamLogo from "@/components/TeamLogo";
 
 const tyreColors: Record<string, string> = {

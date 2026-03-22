@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchSessionTelemetry, fetchAvailableLaps } from "@/lib/api";
-import type { DriverTelemetry } from "@/data/telemetryData";
+import type { DriverTelemetry } from "@/types/session";
 
 export function useSessionTelemetry(
   sessionId: number | null,

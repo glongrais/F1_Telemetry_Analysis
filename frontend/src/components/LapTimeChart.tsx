@@ -3,7 +3,8 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ZAxis,
 } from "recharts";
 import { cn } from "@/lib/utils";
-import { LapTimeData, driverColors } from "@/data/raceAnalysis";
+import type { LapTimeData } from "@/types/analysis";
+import { driverColors } from "@/data/raceAnalysis";
 
 const allDrivers = ["VER", "NOR", "LEC", "PIA", "SAI", "HAM", "RUS", "PER"];
 

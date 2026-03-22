@@ -1,7 +1,8 @@
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { GapData, driverColors } from "@/data/raceAnalysis";
+import type { GapData } from "@/types/analysis";
+import { driverColors } from "@/data/raceAnalysis";
 
 const drivers = ["NOR", "LEC", "PIA", "SAI", "HAM", "RUS", "PER"];
 const dashed = new Set(["PIA", "RUS", "PER", "SAI"]);

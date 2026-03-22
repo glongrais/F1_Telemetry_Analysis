@@ -1,6 +1,6 @@
 import { Calendar, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { RaceEvent } from "@/data/mockData";
+import { RaceEvent } from "@/types/standings";
 import { countryFlag } from "@/lib/countryFlag";
 
 interface SessionInfo {

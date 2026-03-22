@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchEvents, fetchSessions, fetchSeasons } from "@/lib/api";
-import type { RaceEvent } from "@/data/mockData";
+import type { RaceEvent } from "@/types/standings";
 
 export function useEvents(year: number) {
   return useQuery<RaceEvent[]>({

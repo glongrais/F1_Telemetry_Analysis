@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { HeadToHead } from "@/data/sessionData";
+import { HeadToHead } from "@/types/session";
 import { Users } from "lucide-react";
 
 interface HeadToHeadPanelProps {

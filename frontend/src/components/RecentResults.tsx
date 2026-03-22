@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { RaceResult } from "@/data/mockData";
+import { RaceResult } from "@/types/standings";
 import { Flag, Clock, MapPin } from "lucide-react";
 import { countryFlag } from "@/lib/countryFlag";
 import { countryToCircuitId } from "@/lib/circuitMapping";

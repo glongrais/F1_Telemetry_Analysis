@@ -58,6 +58,7 @@ api/                                  frontend/src/
   db.py          → DuckDB read-only     lib/api.ts   → typed fetch client
   routes/        → 6 route modules      pages/       → Index, DriverProfile, TrackProfile
                                         components/  → charts, panels, sidebar
+                                        types/       → shared TypeScript interfaces
 ```
 
 **Database**: `data/f1_data_v2.duckdb` (DuckDB, dbt-duckdb adapter, schema `main`)
@@ -105,4 +106,6 @@ Materializations: staging = view, intermediate = view, marts = table.
 - DB `country` column stores full names (`'Bahrain'`); API converts to ISO codes (`'BH'`) for frontend flag rendering.
 - `car_data` table is very large — telemetry endpoint requires `drivers` + `lap` query params.
 - Python venv is Python 3.9 — use `from typing import List, Optional` instead of `list | None` syntax.
-- Static data not in DB (kept as .ts files): `circuitData.ts`, `trackData.ts`, team logos, circuit mappings.
+- Static data not in DB (kept as .ts files): `circuitData.ts`, `trackData.ts`, `raceAnalysis.ts` (driver colors), team logos, circuit mappings.
+- TypeScript interfaces live in `frontend/src/types/` (`standings.ts`, `session.ts`, `analysis.ts`), not in data files.
+- Python deps are pinned in `requirements.txt` — update pins after upgrading packages.

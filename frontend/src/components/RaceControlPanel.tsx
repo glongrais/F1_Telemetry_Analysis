@@ -1,4 +1,4 @@
-import { RaceControlMessage } from "@/data/sessionData";
+import { RaceControlMessage } from "@/types/session";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Flag, ShieldAlert, Info, Zap } from "lucide-react";
 

@@ -3,7 +3,8 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
-import { PositionData, driverColors } from "@/data/raceAnalysis";
+import type { PositionData } from "@/types/analysis";
+import { driverColors } from "@/data/raceAnalysis";
 
 interface PositionChartProps {
   data: PositionData[];

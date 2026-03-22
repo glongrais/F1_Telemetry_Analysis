@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { SpeedTrapEntry } from "@/data/raceAnalysis";
+import { SpeedTrapEntry } from "@/types/analysis";
 import { Gauge } from "lucide-react";
 import TeamLogo from "@/components/TeamLogo";
 

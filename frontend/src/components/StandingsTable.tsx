@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Driver, Constructor } from "@/data/mockData";
+import { Driver, Constructor } from "@/types/standings";
 import TeamLogo from "@/components/TeamLogo";
 
 export function DriverStandings({ drivers }: { drivers: Driver[] }) {

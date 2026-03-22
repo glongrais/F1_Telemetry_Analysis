@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { TyreStint, PitStop } from "@/data/sessionData";
+import { TyreStint, PitStop } from "@/types/session";
 import { ArrowDown } from "lucide-react";
 
 const tyreColorMap: Record<string, string> = {

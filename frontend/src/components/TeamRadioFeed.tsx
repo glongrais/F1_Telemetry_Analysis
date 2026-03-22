@@ -1,4 +1,4 @@
-import { RadioMessage } from "@/data/sessionData";
+import { RadioMessage } from "@/types/session";
 import { Radio, Volume2 } from "lucide-react";
 
 interface TeamRadioFeedProps {

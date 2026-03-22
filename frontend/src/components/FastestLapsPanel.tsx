@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { FastestLapEntry } from "@/data/raceAnalysis";
+import { FastestLapEntry } from "@/types/analysis";
 import { Timer } from "lucide-react";
 
 interface FastestLapsPanelProps {

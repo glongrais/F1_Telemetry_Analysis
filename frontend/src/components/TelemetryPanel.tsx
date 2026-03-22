@@ -4,7 +4,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 import { useSessionTelemetry, useAvailableLaps } from "@/hooks/useTelemetry";
-import type { DriverTelemetry } from "@/data/telemetryData";
+import type { DriverTelemetry } from "@/types/session";
 import { X, Plus } from "lucide-react";
 
 type TraceType = "speed" | "throttle" | "brake" | "rpm" | "gear";

@@ -1,5 +1,5 @@
 import { Trophy, Flag, Timer, Zap } from "lucide-react";
-import type { Driver, RaceResult, RaceEvent } from "@/data/mockData";
+import type { Driver, RaceResult, RaceEvent } from "@/types/standings";
 
 interface StatCardProps {
   label: string;

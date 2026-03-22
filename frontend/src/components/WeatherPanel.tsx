@@ -1,7 +1,7 @@
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { WeatherData } from "@/data/sessionData";
+import { WeatherData } from "@/types/session";
 import { Cloud, Thermometer, Droplets, Wind } from "lucide-react";
 
 interface WeatherPanelProps {

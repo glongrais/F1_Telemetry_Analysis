@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchRecentResults } from "@/lib/api";
-import type { RaceResult } from "@/data/mockData";
+import type { RaceResult } from "@/types/standings";
 
 export function useRecentResults(year: number) {
   return useQuery<RaceResult[]>({
