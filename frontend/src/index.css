@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@font-face {
+  font-family: 'Formula1';
+  src: url('/fonts/Formula1-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Formula1';
+  src: url('/fonts/Formula1-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Formula1 Wide';
+  src: url('/fonts/Formula1-Wide.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 14% 7%;
+    --foreground: 220 13% 95%;
+
+    --card: 220 12% 11%;
+    --card-foreground: 220 13% 95%;
+
+    --popover: 220 12% 11%;
+    --popover-foreground: 220 13% 95%;
+
+    --primary: 1 100% 44%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 12% 15%;
+    --secondary-foreground: 220 13% 95%;
+
+    --muted: 220 10% 18%;
+    --muted-foreground: 218 11% 65%;
+
+    --accent: 220 12% 15%;
+    --accent-foreground: 220 13% 95%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 10% 20%;
+    --input: 220 10% 20%;
+    --ring: 1 100% 44%;
+
+    /* Chart colors */
+    --chart-grid: 220 10% 15%;
+    --chart-axis: 220 10% 18%;
+    --chart-tick: 218 11% 45%;
+    --chart-tooltip-bg: 220 12% 11%;
+    --chart-tooltip-border: 220 10% 20%;
+
+    --radius: 1rem;
+
+    /* F1 Status Colors */
+    --fastest: 270 100% 80%;
+    --personal-best: 174 100% 41%;
+    --warning: 60 100% 50%;
+
+    /* Tyre compound colors */
+    --tyre-soft: 0 100% 50%;
+    --tyre-medium: 45 100% 50%;
+    --tyre-hard: 0 0% 95%;
+    --tyre-intermediate: 120 60% 50%;
+    --tyre-wet: 210 100% 50%;
+
+    /* Sidebar */
+    --sidebar-background: 220 14% 5%;
+    --sidebar-foreground: 220 13% 95%;
+    --sidebar-primary: 1 100% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 12% 12%;
+    --sidebar-accent-foreground: 220 13% 95%;
+    --sidebar-border: 220 10% 15%;
+    --sidebar-ring: 1 100% 44%;
+
+    /* Font families */
+    --font-display: 'Formula1', 'Titillium Web', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  .light {
+    --background: 0 0% 97%;
+    --foreground: 220 14% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 14% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 14% 10%;
+
+    --primary: 1 100% 44%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 220 14% 10%;
+
+    --muted: 220 14% 93%;
+    --muted-foreground: 218 11% 40%;
+
+    --accent: 220 14% 92%;
+    --accent-foreground: 220 14% 10%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 14% 86%;
+    --input: 220 14% 86%;
+    --ring: 1 100% 44%;
+
+    /* Chart colors */
+    --chart-grid: 220 14% 88%;
+    --chart-axis: 220 14% 82%;
+    --chart-tick: 218 11% 40%;
+    --chart-tooltip-bg: 0 0% 100%;
+    --chart-tooltip-border: 220 14% 86%;
+
+    --fastest: 270 80% 55%;
+    --personal-best: 174 80% 30%;
+    --warning: 45 100% 40%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 14% 10%;
+    --sidebar-primary: 1 100% 44%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 95%;
+    --sidebar-accent-foreground: 220 14% 10%;
+    --sidebar-border: 220 14% 88%;
+    --sidebar-ring: 1 100% 44%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-body {
+    font-family: var(--font-body);
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
+
+  .glow-fastest {
+    box-shadow: 0 0 12px hsl(var(--fastest) / 0.4);
+  }
+
+  .glow-personal-best {
+    box-shadow: 0 0 12px hsl(var(--personal-best) / 0.4);
+  }
+
+  .data-cell {
+    @apply font-mono text-sm tabular-nums tracking-tight;
+  }
+
+  .sector-fastest {
+    @apply text-[hsl(var(--fastest))];
+  }
+
+  .sector-pb {
+    @apply text-[hsl(var(--personal-best))];
+  }
+
+  .sector-warning {
+    @apply text-[hsl(var(--warning))];
+  }
+}

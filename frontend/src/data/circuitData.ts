@@ -1,0 +1,250 @@
+import { countryFlag } from "@/lib/countryFlag";
+
+export interface Circuit {
+  id: string;
+  name: string;
+  officialName: string;
+  location: string;
+  country: string;
+  countryCode: string;
+  lengthKm: number;
+  turns: number;
+  drsZones: number;
+  lapRecord: string;
+  lapRecordHolder: string;
+  lapRecordYear: number;
+  firstGP: number;
+  raceDistance: number; // laps
+  raceDistanceKm: number;
+  altitude: number; // meters
+  direction: "clockwise" | "anti-clockwise";
+  type: "street" | "permanent" | "semi-permanent";
+  previousWinners: { year: number; driver: string; team: string; teamColor: string }[];
+  sectorLengths: [number, number, number]; // km per sector
+  topSpeedKmh: number;
+  avgSpeedKmh: number;
+}
+
+export const circuits: Circuit[] = [
+  {
+    id: "bahrain",
+    name: "Bahrain International Circuit",
+    officialName: "Bahrain Grand Prix",
+    location: "Sakhir",
+    country: "Bahrain",
+    countryCode: "BH",
+    lengthKm: 5.412,
+    turns: 15,
+    drsZones: 3,
+    lapRecord: "1:31.447",
+    lapRecordHolder: "Pedro de la Rosa",
+    lapRecordYear: 2005,
+    firstGP: 2004,
+    raceDistance: 57,
+    raceDistanceKm: 308.238,
+    altitude: 12,
+    direction: "clockwise",
+    type: "permanent",
+    previousWinners: [
+      { year: 2024, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+      { year: 2023, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+      { year: 2022, driver: "Charles Leclerc", team: "Ferrari", teamColor: "#E80020" },
+    ],
+    sectorLengths: [1.85, 1.72, 1.84],
+    topSpeedKmh: 332,
+    avgSpeedKmh: 207,
+  },
+  {
+    id: "jeddah",
+    name: "Jeddah Corniche Circuit",
+    officialName: "Saudi Arabian Grand Prix",
+    location: "Jeddah",
+    country: "Saudi Arabia",
+    countryCode: "SA",
+    lengthKm: 6.174,
+    turns: 27,
+    drsZones: 3,
+    lapRecord: "1:30.734",
+    lapRecordHolder: "Lewis Hamilton",
+    lapRecordYear: 2021,
+    firstGP: 2021,
+    raceDistance: 50,
+    raceDistanceKm: 308.45,
+    altitude: 5,
+    direction: "anti-clockwise",
+    type: "street",
+    previousWinners: [
+      { year: 2024, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+      { year: 2023, driver: "Sergio Perez", team: "Red Bull Racing", teamColor: "#3671C6" },
+    ],
+    sectorLengths: [2.17, 2.02, 1.98],
+    topSpeedKmh: 322,
+    avgSpeedKmh: 242,
+  },
+  {
+    id: "melbourne",
+    name: "Albert Park Circuit",
+    officialName: "Australian Grand Prix",
+    location: "Melbourne",
+    country: "Australia",
+    countryCode: "AU",
+    lengthKm: 5.278,
+    turns: 14,
+    drsZones: 4,
+    lapRecord: "1:19.813",
+    lapRecordHolder: "Charles Leclerc",
+    lapRecordYear: 2024,
+    firstGP: 1996,
+    raceDistance: 58,
+    raceDistanceKm: 306.124,
+    altitude: 2,
+    direction: "clockwise",
+    type: "semi-permanent",
+    previousWinners: [
+      { year: 2024, driver: "Carlos Sainz", team: "Ferrari", teamColor: "#E80020" },
+      { year: 2023, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+    ],
+    sectorLengths: [1.75, 1.78, 1.73],
+    topSpeedKmh: 330,
+    avgSpeedKmh: 233,
+  },
+  {
+    id: "suzuka",
+    name: "Suzuka International Racing Course",
+    officialName: "Japanese Grand Prix",
+    location: "Suzuka",
+    country: "Japan",
+    countryCode: "JP",
+    lengthKm: 5.807,
+    turns: 18,
+    drsZones: 2,
+    lapRecord: "1:30.983",
+    lapRecordHolder: "Lewis Hamilton",
+    lapRecordYear: 2019,
+    firstGP: 1987,
+    raceDistance: 53,
+    raceDistanceKm: 307.471,
+    altitude: 45,
+    direction: "clockwise",
+    type: "permanent",
+    previousWinners: [
+      { year: 2024, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+      { year: 2023, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+    ],
+    sectorLengths: [1.93, 2.05, 1.83],
+    topSpeedKmh: 319,
+    avgSpeedKmh: 229,
+  },
+  {
+    id: "monaco",
+    name: "Circuit de Monaco",
+    officialName: "Monaco Grand Prix",
+    location: "Monte Carlo",
+    country: "Monaco",
+    countryCode: "MC",
+    lengthKm: 3.337,
+    turns: 19,
+    drsZones: 1,
+    lapRecord: "1:12.909",
+    lapRecordHolder: "Lewis Hamilton",
+    lapRecordYear: 2021,
+    firstGP: 1950,
+    raceDistance: 78,
+    raceDistanceKm: 260.286,
+    altitude: 42,
+    direction: "clockwise",
+    type: "street",
+    previousWinners: [
+      { year: 2024, driver: "Charles Leclerc", team: "Ferrari", teamColor: "#E80020" },
+      { year: 2023, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+    ],
+    sectorLengths: [1.11, 1.12, 1.10],
+    topSpeedKmh: 290,
+    avgSpeedKmh: 158,
+  },
+  {
+    id: "imola",
+    name: "Autodromo Enzo e Dino Ferrari",
+    officialName: "Emilia Romagna Grand Prix",
+    location: "Imola",
+    country: "Italy",
+    countryCode: "IT",
+    lengthKm: 4.909,
+    turns: 19,
+    drsZones: 2,
+    lapRecord: "1:15.484",
+    lapRecordHolder: "Lewis Hamilton",
+    lapRecordYear: 2020,
+    firstGP: 1980,
+    raceDistance: 63,
+    raceDistanceKm: 309.049,
+    altitude: 37,
+    direction: "anti-clockwise",
+    type: "permanent",
+    previousWinners: [
+      { year: 2024, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+      { year: 2022, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+    ],
+    sectorLengths: [1.64, 1.63, 1.64],
+    topSpeedKmh: 322,
+    avgSpeedKmh: 223,
+  },
+  {
+    id: "miami",
+    name: "Miami International Autodrome",
+    officialName: "Miami Grand Prix",
+    location: "Miami Gardens",
+    country: "United States",
+    countryCode: "US",
+    lengthKm: 5.412,
+    turns: 19,
+    drsZones: 3,
+    lapRecord: "1:29.708",
+    lapRecordHolder: "Max Verstappen",
+    lapRecordYear: 2023,
+    firstGP: 2022,
+    raceDistance: 57,
+    raceDistanceKm: 308.326,
+    altitude: 2,
+    direction: "anti-clockwise",
+    type: "semi-permanent",
+    previousWinners: [
+      { year: 2024, driver: "Lando Norris", team: "McLaren", teamColor: "#FF8000" },
+      { year: 2023, driver: "Sergio Perez", team: "Red Bull Racing", teamColor: "#3671C6" },
+    ],
+    sectorLengths: [1.80, 1.81, 1.80],
+    topSpeedKmh: 338,
+    avgSpeedKmh: 218,
+  },
+  {
+    id: "shanghai",
+    name: "Shanghai International Circuit",
+    officialName: "Chinese Grand Prix",
+    location: "Shanghai",
+    country: "China",
+    countryCode: "CN",
+    lengthKm: 5.451,
+    turns: 16,
+    drsZones: 2,
+    lapRecord: "1:32.238",
+    lapRecordHolder: "Michael Schumacher",
+    lapRecordYear: 2004,
+    firstGP: 2004,
+    raceDistance: 56,
+    raceDistanceKm: 305.066,
+    altitude: 5,
+    direction: "clockwise",
+    type: "permanent",
+    previousWinners: [
+      { year: 2024, driver: "Max Verstappen", team: "Red Bull Racing", teamColor: "#3671C6" },
+      { year: 2019, driver: "Lewis Hamilton", team: "Mercedes", teamColor: "#27F4D2" },
+    ],
+    sectorLengths: [1.82, 1.82, 1.81],
+    topSpeedKmh: 327,
+    avgSpeedKmh: 205,
+  },
+];
+
+export function getCircuitById(id: string): Circuit | undefined {
+  return circuits.find((c) => c.id === id);
+}
