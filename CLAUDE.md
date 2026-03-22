@@ -19,6 +19,10 @@ source .venv/bin/activate
 python src/fastf1_fetcher/main.py --start-year 2024 --end-year 2024 --skip-radio
 python src/fastf1_fetcher/main.py --start-year 2024 --end-year 2024 --workers 8
 
+# Livetiming ingestion (for seasons FastF1 doesn't support yet)
+python src/livetiming_fetcher/main.py --year 2026
+python src/livetiming_fetcher/main.py --year 2026 --round 1 --workers 4
+
 # API server (from repo root)
 uvicorn api.main:app --reload --port 8002
 
@@ -51,6 +55,14 @@ src/fastf1_fetcher/                   dbt/f1_analytics/models/
   schema.py      → DDL (15 tables)
   downloader.py  → radio mp3 download
   agent.py       → mlx_whisper transcription
+
+src/livetiming_fetcher/               ← direct F1 livetiming API fetcher
+  main.py        → CLI entry point      (same DB tables as fastf1_fetcher)
+  client.py      → HTTP client
+  decoder.py     → jsonStream + zlib
+  schedule.py    → season discovery
+  fetcher.py     → parallel fetch
+  parsers/       → 10 topic parsers
 
 API (Python FastAPI)                  FRONTEND (React + Vite)
 api/                                  frontend/src/
@@ -97,6 +109,10 @@ Materializations: staging = view, intermediate = view, marts = table.
 - `grid_position = 0` means pit lane start — NULL out `positions_gained`.
 - Driver `status` values: `'Finished'`, `'Lapped'`, `'Retired'`, `'Disqualified'`, `'Did not start'`, `''` (empty string).
 - Sprint sessions exist (`Sprint`, `Sprint Qualifying`, `Sprint Shootout`) — standings models currently exclude sprint points.
+- Livetiming data (`source='livetiming'`) has NULL `team_id`, `driver_id`, `country_code` — dbt `not_null` tests on `mart__constructor_standings.team_id` will fail (2 tests).
+- F1 livetiming API returns UTF-8 BOM — must decode with `utf-8-sig`.
+- `.z` topics (CarData, Position) use raw deflate: `zlib.decompress(data, -zlib.MAX_WBITS)`, not plain `zlib.decompress()`.
+- Position.z structure: `{"Position": [{"Timestamp": "...", "Entries": {...}}]}` — differs from CarData.z: `{"Entries": [{"Utc": "...", "Cars": {...}}]}`.
 
 ### API ↔ Frontend notes
 
