@@ -1,8 +1,9 @@
+import os
 import duckdb
 import pandas as pd
 import numpy as np
 
-DB_PATH = '../../data/f1_data_v2.duckdb'
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data', 'f1_data_v2.duckdb')
 
 
 def get_connection(db_path=DB_PATH):

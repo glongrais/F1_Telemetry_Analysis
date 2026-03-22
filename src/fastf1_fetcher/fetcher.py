@@ -9,11 +9,12 @@ from tqdm import tqdm
 logging.basicConfig(level=logging.ERROR)
 logging.getLogger("fastf1").setLevel(logging.ERROR)
 
+import os
 import db_writer
 import db_reader
 from schema import DB_PATH
 
-CACHE_PATH = '../../data/fastf1_cache'
+CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data', 'fastf1_cache')
 MAX_WORKERS = 4
 
 SESSION_TYPE_ORDINALS = {
