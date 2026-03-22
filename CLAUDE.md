@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 F1 telemetry ingestion and analysis pipeline: FastF1 → DuckDB → dbt. Team radio transcription via mlx_whisper (Apple Silicon).
+Frontend dashboard (React/Vite) served via FastAPI backend.
 
 ## Commands
 
@@ -17,6 +18,15 @@ source .venv/bin/activate
 # Ingestion (from repo root)
 python src/fastf1_fetcher/main.py --start-year 2024 --end-year 2024 --skip-radio
 python src/fastf1_fetcher/main.py --start-year 2024 --end-year 2024 --workers 8
+
+# API server (from repo root)
+uvicorn api.main:app --reload --port 8002
+
+# Frontend (from frontend/)
+cd frontend
+npm install                            # first time
+npm run dev                            # dev server on :8080, proxies /api → :8002
+npm run build                          # production build
 
 # dbt (must cd into dbt/f1_analytics first)
 cd dbt/f1_analytics
@@ -41,6 +51,13 @@ src/fastf1_fetcher/                   dbt/f1_analytics/models/
   schema.py      → DDL (15 tables)
   downloader.py  → radio mp3 download
   agent.py       → mlx_whisper transcription
+
+API (Python FastAPI)                  FRONTEND (React + Vite)
+api/                                  frontend/src/
+  main.py        → FastAPI app          hooks/       → React Query data hooks
+  db.py          → DuckDB read-only     lib/api.ts   → typed fetch client
+  routes/        → 6 route modules      pages/       → Index, DriverProfile, TrackProfile
+                                        components/  → charts, panels, sidebar
 ```
 
 **Database**: `data/f1_data_v2.duckdb` (DuckDB, dbt-duckdb adapter, schema `main`)
@@ -53,6 +70,7 @@ Synthetic deterministic integer keys:
 
 ### Key design patterns
 
+- **File-relative paths**: `DB_PATH` and `CACHE_PATH` in `src/fastf1_fetcher/` use `os.path.dirname(os.path.abspath(__file__))` — new file paths must follow this pattern (not bare relative paths) so scripts work from any CWD.
 - **Parallel fetch, serial write**: ProcessPoolExecutor for FastF1 loads, single DuckDB connection for writes (avoids lock contention)
 - **Idempotent**: All inserts use `ON CONFLICT DO NOTHING`; re-runs are safe
 - **Atomic per-session**: One transaction per session; rollback on error
@@ -78,3 +96,13 @@ Materializations: staging = view, intermediate = view, marts = table.
 - `grid_position = 0` means pit lane start — NULL out `positions_gained`.
 - Driver `status` values: `'Finished'`, `'Lapped'`, `'Retired'`, `'Disqualified'`, `'Did not start'`, `''` (empty string).
 - Sprint sessions exist (`Sprint`, `Sprint Qualifying`, `Sprint Shootout`) — standings models currently exclude sprint points.
+
+### API ↔ Frontend notes
+
+- API runs on port 8002 (8000 and 8001 used by other projects). Vite proxies `/api` → `localhost:8002`.
+- DuckDB connection uses `read_only=True` to avoid lock contention with ingestion.
+- DB `session_type` values are `'Practice 1'`, `'Practice 2'`, `'Practice 3'` — sidebar labels use `'FP1'`, `'FP2'`, `'FP3'`; mapping handled in Index.tsx.
+- DB `country` column stores full names (`'Bahrain'`); API converts to ISO codes (`'BH'`) for frontend flag rendering.
+- `car_data` table is very large — telemetry endpoint requires `drivers` + `lap` query params.
+- Python venv is Python 3.9 — use `from typing import List, Optional` instead of `list | None` syntax.
+- Static data not in DB (kept as .ts files): `circuitData.ts`, `trackData.ts`, team logos, circuit mappings.
