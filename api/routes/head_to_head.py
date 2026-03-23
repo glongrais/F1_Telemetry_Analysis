@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Query
 
-from api.db import query
+from api.db import query, current_year
 
 router = APIRouter()
 
 
 @router.get("/head-to-head")
-def head_to_head(year: int = Query(default=2024)):
+def head_to_head(year: int = Query(default=None)):
+    year = year or current_year()
     rows = query(
         """
         WITH latest_round AS (
@@ -26,7 +27,7 @@ def head_to_head(year: int = Query(default=2024)):
                 h.event_name,
                 h.driver_1_quali_beat,
                 h.driver_1_race_beat,
-                '#' || MAX(d1.team_color) AS "teamColor"
+                '#' || LTRIM(MAX(d1.team_color), '#') AS "teamColor"
             FROM mart__head_to_head h
             JOIN sessions s ON s.year = h.year
                 AND s.round_number = h.round_number
@@ -72,7 +73,7 @@ def head_to_head(year: int = Query(default=2024)):
                 },
                 "qualiScore": [row["d1_quali_wins"], row["d2_quali_wins"]],
                 "raceScore": [row["d1_race_wins"], row["d2_race_wins"]],
-                "rounds": [],  # Could populate per-round detail if needed
+                "rounds": [],
             }
         )
     return result

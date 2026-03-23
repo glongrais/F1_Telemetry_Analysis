@@ -1,29 +1,23 @@
 import json
+import logging
 from datetime import datetime, date, timedelta
 
 import requests
 from fastapi import APIRouter, Query
+from fastapi.responses import JSONResponse
 
-from api.db import query
+from api.db import query, current_year, COUNTRY_CODES
 
 router = APIRouter()
 
-_F1_SCHEDULE_URL = "https://livetiming.formula1.com/static/{year}/Index.json"
+logger = logging.getLogger(__name__)
 
-COUNTRY_CODES = {
-    "Bahrain": "BH", "Saudi Arabia": "SA", "Australia": "AU", "Japan": "JP",
-    "China": "CN", "United States": "US", "Italy": "IT", "Monaco": "MC",
-    "Canada": "CA", "Spain": "ES", "Austria": "AT", "United Kingdom": "GB",
-    "Hungary": "HU", "Belgium": "BE", "Netherlands": "NL", "Azerbaijan": "AZ",
-    "Singapore": "SG", "Mexico": "MX", "Brazil": "BR", "Qatar": "QA",
-    "Abu Dhabi": "AE", "United Arab Emirates": "AE", "Portugal": "PT",
-    "France": "FR", "Russia": "RU", "Turkey": "TR", "Germany": "DE",
-    "Emilia Romagna": "IT", "Miami": "US", "Las Vegas": "US",
-}
+_F1_SCHEDULE_URL = "https://livetiming.formula1.com/static/{year}/Index.json"
 
 
 @router.get("/events")
-def list_events(year: int = Query(default=2024)):
+def list_events(year: int = Query(default=None)):
+    year = year or current_year()
     rows = query(
         """
         SELECT
@@ -44,13 +38,13 @@ def list_events(year: int = Query(default=2024)):
         row["format"] = "sprint" if "sprint" in fmt else "conventional"
         if row["date"] is not None:
             row["date"] = str(row["date"])
-        # Convert country name to ISO code for frontend flag rendering
         row["country"] = COUNTRY_CODES.get(row["country"], row["country"][:2].upper())
     return rows
 
 
 @router.get("/events/{round_number}/sessions")
-def list_sessions(round_number: int, year: int = Query(default=2024)):
+def list_sessions(round_number: int, year: int = Query(default=None)):
+    year = year or current_year()
     rows = query(
         """
         SELECT
@@ -130,7 +124,7 @@ def next_race():
                 "format": event_format,
             }
     except Exception:
-        pass
+        logger.debug("Failed to fetch livetiming schedule, falling back to DB", exc_info=True)
 
     # Fallback: use DB events (date only, no start time)
     rows = query(

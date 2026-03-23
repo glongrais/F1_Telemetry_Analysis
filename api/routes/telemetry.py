@@ -17,7 +17,7 @@ def session_telemetry(
     rows = query(
         f"""
         WITH driver_numbers AS (
-            SELECT driver_number, driver_code, '#' || team_color AS team_color
+            SELECT driver_number, driver_code, '#' || LTRIM(team_color, '#') AS team_color
             FROM drivers
             WHERE session_id = ?
                 AND driver_code IN ({placeholders})

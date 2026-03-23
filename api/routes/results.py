@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Query
 
-from api.db import query
-from api.routes.events import COUNTRY_CODES
+from api.db import query, current_year, COUNTRY_CODES, format_lap_time
 
 router = APIRouter()
 
 
 @router.get("/results/recent")
-def recent_results(year: int = Query(default=2024), limit: int = Query(default=4)):
+def recent_results(year: int = Query(default=None), limit: int = Query(default=4, le=50)):
+    year = year or current_year()
     rows = query(
         """
         WITH race_winners AS (
@@ -61,14 +61,8 @@ def recent_results(year: int = Query(default=2024), limit: int = Query(default=4
         [year, year, year, limit],
     )
     for row in rows:
-        # Format fastest lap as string
-        if row["fastestLap"] is not None:
-            total_seconds = row["fastestLap"]
-            minutes = int(total_seconds // 60)
-            seconds = total_seconds - minutes * 60
-            row["fastestLap"] = f"{minutes}:{seconds:06.3f}"
+        row["fastestLap"] = format_lap_time(row["fastestLap"])
         row["gap"] = "+0.000s"
-        # Convert country name to ISO code
         if row["countryCode"]:
             row["countryCode"] = COUNTRY_CODES.get(row["countryCode"], row["countryCode"][:2].upper())
     return rows
