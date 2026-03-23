@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchEvents, fetchSessions, fetchSeasons } from "@/lib/api";
+import { fetchEvents, fetchSessions, fetchSeasons, fetchNextRace } from "@/lib/api";
 import type { RaceEvent } from "@/types/standings";
 
 export function useEvents(year: number) {
@@ -31,6 +31,14 @@ export function useSeasons() {
   return useQuery<number[]>({
     queryKey: ["seasons"],
     queryFn: fetchSeasons,
+    staleTime: 600_000,
+  });
+}
+
+export function useNextRace() {
+  return useQuery<any | null>({
+    queryKey: ["nextRace"],
+    queryFn: fetchNextRace,
     staleTime: 600_000,
   });
 }

@@ -1,21 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { MapPin, Calendar } from "lucide-react";
-import { useEvents } from "@/hooks/useEvents";
+import { useNextRace } from "@/hooks/useEvents";
 import { countryFlag } from "@/lib/countryFlag";
 import { getCircuitByCountry } from "@/data/circuitData";
-
-// Parse "YYYY-MM-DD" as local date (not UTC) by replacing hyphens
-function parseLocalDate(dateStr: string): Date {
-  return new Date(dateStr.replace(/-/g, "/"));
-}
-
-function getNextEvent(events: any[]) {
-  const now = new Date();
-  const upcoming = events.find((e) => parseLocalDate(e.date) > now);
-  if (upcoming) return upcoming;
-  return events.length > 0 ? events[events.length - 1] : null;
-}
 
 interface TimeLeft {
   days: number;
@@ -24,8 +12,20 @@ interface TimeLeft {
   seconds: number;
 }
 
-function calcTimeLeft(targetDate: string): TimeLeft {
-  const diff = Math.max(0, parseLocalDate(targetDate).getTime() - Date.now());
+function calcTimeLeft(targetDateStr: string, gmtOffset: string | null): TimeLeft {
+  let targetMs: number;
+  if (gmtOffset && targetDateStr.includes("T")) {
+    // Exact start time: parse as local time at venue, convert to UTC
+    // gmtOffset is "09:00:00" meaning venue is UTC+9
+    const local = new Date(targetDateStr + "Z"); // treat as UTC first
+    const [oh, om] = gmtOffset.split(":").map(Number);
+    const offsetMs = (oh * 60 + om) * 60 * 1000;
+    targetMs = local.getTime() - offsetMs;
+  } else {
+    // Date-only fallback: count down to local midnight of race day
+    targetMs = new Date(targetDateStr.replace(/-/g, "/")).getTime();
+  }
+  const diff = Math.max(0, targetMs - Date.now());
   return {
     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
     hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -48,16 +48,16 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 }
 
 export default function NextRaceCountdown() {
-  const { data: events = [] } = useEvents(new Date().getFullYear());
-  const event = getNextEvent(events);
+  const { data: event } = useNextRace();
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
     if (!event) return;
-    setTimeLeft(calcTimeLeft(event.date));
-    const interval = setInterval(() => setTimeLeft(calcTimeLeft(event.date)), 1000);
+    const update = () => setTimeLeft(calcTimeLeft(event.date, event.gmtOffset));
+    update();
+    const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [event?.date]);
+  }, [event?.date, event?.gmtOffset]);
 
   if (!event) {
     return (
@@ -67,7 +67,7 @@ export default function NextRaceCountdown() {
     );
   }
 
-  const raceDate = parseLocalDate(event.date);
+  const raceDate = new Date(event.date);
   const formattedDate = raceDate.toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",

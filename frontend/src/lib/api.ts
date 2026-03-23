@@ -32,6 +32,8 @@ export const fetchSessions = (year: number, round: number) =>
 
 export const fetchSeasons = () => fetchApi<number[]>("/seasons");
 
+export const fetchNextRace = () => fetchApi<any | null>("/next-race");
+
 // Results
 export const fetchRecentResults = (year: number, limit = 4) =>
   fetchApi<any[]>(`/results/recent?year=${year}&limit=${limit}`);

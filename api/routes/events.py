@@ -1,8 +1,14 @@
+import json
+from datetime import datetime, date, timedelta
+
+import requests
 from fastapi import APIRouter, Query
 
 from api.db import query
 
 router = APIRouter()
+
+_F1_SCHEDULE_URL = "https://livetiming.formula1.com/static/{year}/Index.json"
 
 COUNTRY_CODES = {
     "Bahrain": "BH", "Saudi Arabia": "SA", "Australia": "AU", "Japan": "JP",
@@ -72,3 +78,84 @@ def list_sessions(round_number: int, year: int = Query(default=2024)):
 def list_seasons():
     rows = query("SELECT DISTINCT year FROM events ORDER BY year DESC")
     return [row["year"] for row in rows]
+
+
+@router.get("/next-race")
+def next_race():
+    """Return the next upcoming race with actual start time from F1 livetiming API,
+    falling back to DB events if the API doesn't have it yet."""
+    year = date.today().year
+    today = date.today()
+
+    # Try livetiming API first for exact start times
+    try:
+        r = requests.get(_F1_SCHEDULE_URL.format(year=year), timeout=10)
+        r.raise_for_status()
+        cal = json.loads(r.content.decode("utf-8-sig"))
+
+        now = datetime.utcnow()
+        for meeting in cal.get("Meetings", []):
+            code = meeting.get("Code", "")
+            name = meeting.get("Name", "")
+            if "T" in code.replace("F1", "").replace(str(meeting.get("Number", "")), "") or "Testing" in name:
+                continue
+
+            sessions = meeting.get("Sessions", [])
+            race_session = next((s for s in sessions if s.get("Name") == "Race"), None)
+            if not race_session:
+                continue
+
+            start = race_session.get("StartDate", "")
+            if not start:
+                continue
+
+            race_start = datetime.fromisoformat(start)
+            if race_start < now:
+                continue
+
+            gmt_offset = race_session.get("GmtOffset", "00:00:00")
+            country = meeting.get("Country", {}).get("Name", "")
+            event_format = "conventional"
+            sess_names = {s.get("Name", "") for s in sessions}
+            if "Sprint" in sess_names or "Sprint Qualifying" in sess_names:
+                event_format = "sprint"
+
+            return {
+                "round": meeting.get("Number", 0),
+                "name": meeting.get("Name", ""),
+                "country": COUNTRY_CODES.get(country, country[:2].upper()),
+                "location": meeting.get("Location", ""),
+                "date": start,
+                "gmtOffset": gmt_offset,
+                "format": event_format,
+            }
+    except Exception:
+        pass
+
+    # Fallback: use DB events (date only, no start time)
+    rows = query(
+        """
+        SELECT e.round_number, e.event_name, e.country, e.location,
+               e.event_date, e.event_format
+        FROM events e
+        WHERE e.year = ? AND e.event_date >= ?
+        ORDER BY e.event_date
+        LIMIT 1
+        """,
+        [year, str(today)],
+    )
+    if not rows:
+        return None
+
+    row = rows[0]
+    fmt = (row["event_format"] or "").lower()
+    country = row["country"] or ""
+    return {
+        "round": row["round_number"],
+        "name": row["event_name"],
+        "country": COUNTRY_CODES.get(country, country[:2].upper()),
+        "location": row["location"],
+        "date": str(row["event_date"]),
+        "gmtOffset": None,
+        "format": "sprint" if "sprint" in fmt else "conventional",
+    }
