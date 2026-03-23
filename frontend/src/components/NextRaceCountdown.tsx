@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { MapPin, Calendar } from "lucide-react";
 import { useEvents } from "@/hooks/useEvents";
 import { countryFlag } from "@/lib/countryFlag";
-import { roundToCircuitId } from "@/lib/circuitMapping";
+import { getCircuitByCountry } from "@/data/circuitData";
 
 function getNextEvent(events: any[]) {
   const now = new Date();
@@ -107,9 +107,9 @@ export default function NextRaceCountdown() {
                 <Calendar size={12} />
                 {formattedDate}
               </span>
-              {roundToCircuitId[event.round] && (
+              {getCircuitByCountry(event.country) && (
                 <Link
-                  to={`/track/${roundToCircuitId[event.round]}`}
+                  to={`/track/${getCircuitByCountry(event.country)!.id}`}
                   className="flex items-center gap-1 text-primary hover:underline font-medium"
                 >
                   Circuit Info →

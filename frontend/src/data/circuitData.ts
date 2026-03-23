@@ -248,3 +248,7 @@ export const circuits: Circuit[] = [
 export function getCircuitById(id: string): Circuit | undefined {
   return circuits.find((c) => c.id === id);
 }
+
+export function getCircuitByCountry(countryCode: string): Circuit | undefined {
+  return circuits.find((c) => c.countryCode === countryCode);
+}

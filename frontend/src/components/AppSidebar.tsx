@@ -4,7 +4,7 @@ import { ChevronDown, ChevronRight, Trophy, Calendar, BarChart3, PanelLeftClose,
 import { cn } from "@/lib/utils";
 import { useEvents, useSeasons } from "@/hooks/useEvents";
 import { countryFlag } from "@/lib/countryFlag";
-import { roundToCircuitId } from "@/lib/circuitMapping";
+import { getCircuitByCountry } from "@/data/circuitData";
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -161,9 +161,9 @@ export default function AppSidebar({
 
                     {expandedRound === event.round && (
                       <div className="ml-5 mt-0.5 space-y-0.5 border-l border-sidebar-border pl-2">
-                        {roundToCircuitId[event.round] && (
+                        {getCircuitByCountry(event.country) && (
                           <Link
-                            to={`/track/${roundToCircuitId[event.round]}`}
+                            to={`/track/${getCircuitByCountry(event.country)!.id}`}
                             onClick={onMobileToggle}
                             className="w-full flex items-center gap-1.5 px-2 py-1 text-[11px] rounded-sm transition-colors text-muted-foreground hover:text-primary hover:bg-primary/10"
                           >

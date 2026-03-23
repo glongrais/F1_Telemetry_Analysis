@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { RaceResult } from "@/types/standings";
 import { Flag, Clock, MapPin } from "lucide-react";
 import { countryFlag } from "@/lib/countryFlag";
-import { countryToCircuitId } from "@/lib/circuitMapping";
+import { getCircuitByCountry } from "@/data/circuitData";
 
 export default function RecentResults({ results }: { results: RaceResult[] }) {
   return (
@@ -18,9 +18,9 @@ export default function RecentResults({ results }: { results: RaceResult[] }) {
                 <span className="font-display text-xs font-bold text-muted-foreground">R{r.round}</span>
                 <span className="text-sm leading-none">{countryFlag(r.country)}</span>
                 <span className="font-display text-sm font-semibold">{r.raceName}</span>
-                {countryToCircuitId[r.country] && (
+                {getCircuitByCountry(r.country) && (
                   <Link
-                    to={`/track/${countryToCircuitId[r.country]}`}
+                    to={`/track/${getCircuitByCountry(r.country)!.id}`}
                     className="text-[9px] px-1.5 py-0.5 bg-accent text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-sm transition-colors font-semibold flex items-center gap-1"
                   >
                     <MapPin size={8} />
