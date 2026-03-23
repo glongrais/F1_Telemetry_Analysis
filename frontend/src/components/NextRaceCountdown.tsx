@@ -48,7 +48,7 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 }
 
 export default function NextRaceCountdown() {
-  const { data: event } = useNextRace();
+  const { data: event, isLoading, isError } = useNextRace();
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -59,12 +59,16 @@ export default function NextRaceCountdown() {
     return () => clearInterval(interval);
   }, [event?.date, event?.gmtOffset]);
 
-  if (!event) {
+  if (isLoading) {
     return (
       <div className="bg-card rounded-sm border border-border p-6 text-center text-muted-foreground text-sm">
         Loading schedule...
       </div>
     );
+  }
+
+  if (!event || isError) {
+    return null;
   }
 
   const raceDate = new Date(event.date);
