@@ -114,11 +114,16 @@ Materializations: staging = view, intermediate = view, marts = table.
 - F1 livetiming API returns UTF-8 BOM — must decode with `utf-8-sig`.
 - `.z` topics (CarData, Position) use raw deflate: `zlib.decompress(data, -zlib.MAX_WBITS)`, not plain `zlib.decompress()`.
 - Position.z structure: `{"Position": [{"Timestamp": "...", "Entries": {...}}]}` — differs from CarData.z: `{"Entries": [{"Utc": "...", "Cars": {...}}]}`.
+- `team_color` in drivers has inconsistent `#` prefix — livetiming includes it, FastF1 doesn't. Always use `'#' || LTRIM(team_color, '#')` in SQL.
+- Timestamps in `int__gap_analysis`, `int__pit_stops`, laps (`sector_*_session_time`, `pit_in_time`, `pit_out_time`) are `DOUBLE` (seconds), not `TIMESTAMP` — use direct arithmetic, not `EPOCH()` or `EXTRACT(EPOCH FROM)`.
+- Pit stop data: `pit_in_time` and `pit_out_time` are on separate lap rows (in-lap vs out-lap). Join lap N `pit_in` with lap N+1 `pit_out` to compute duration.
 
 ### API ↔ Frontend notes
 
 - API runs on port 8002 (8000 and 8001 used by other projects). Vite proxies `/api` → `localhost:8002`.
-- DuckDB connection uses `read_only=True` to avoid lock contention with ingestion.
+- DuckDB connection uses `read_only=True` with per-query open/close — don't hold persistent connections, even read-only ones hold shared locks that block `dbt build`.
+- Shared API utilities (`COUNTRY_CODES`, `format_lap_time`, `format_gap`, `current_year`) live in `api/db.py`, not duplicated across routes.
+- `src/shared/__init__.py` contains `SESSION_TYPE_ORDINALS`, `make_event_id`, `make_session_id` — used by both fetchers.
 - DB `session_type` values are `'Practice 1'`, `'Practice 2'`, `'Practice 3'` — sidebar labels use `'FP1'`, `'FP2'`, `'FP3'`; mapping handled in Index.tsx.
 - DB `country` column stores full names (`'Bahrain'`); API converts to ISO codes (`'BH'`) for frontend flag rendering.
 - `car_data` table is very large — telemetry endpoint requires `drivers` + `lap` query params.
