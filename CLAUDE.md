@@ -125,6 +125,8 @@ Materializations: staging = view, intermediate = view, marts = table.
 - Python venv is Python 3.9 — use `from typing import List, Optional` instead of `list | None` syntax.
 - Static data not in DB (kept as .ts files): `circuitData.ts`, `raceAnalysis.ts` (driver colors), team logos.
 - Circuit links use `getCircuitByCountry(countryCode)` from `circuitData.ts` — no round-number mapping (rounds change yearly).
+- `/api/next-race` fetches next race start time from F1 livetiming API, falls back to DB `event_date`. Livetiming API only has published rounds (not full season).
+- After adding new API routes, kill the uvicorn process and restart — `--reload` may not detect new routes: `kill $(lsof -ti:8002)`.
 - Frontend/API year defaults: use `new Date().getFullYear()` in components, not hardcoded years. Watch for hardcoded `2024` in new code.
 - TypeScript interfaces live in `frontend/src/types/` (`standings.ts`, `session.ts`, `analysis.ts`), not in data files.
 - Python deps are pinned in `requirements.txt` — update pins after upgrading packages.
