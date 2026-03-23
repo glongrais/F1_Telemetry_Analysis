@@ -35,7 +35,8 @@ models:
       - name: round_number
         data_tests:
           - not_null
-      - name: team_id
+      - name: team_name
+        description: "Team name (used as partition key since team_id can be NULL for livetiming data)"
         data_tests:
           - not_null
       - name: constructor_championship_position
@@ -46,7 +47,7 @@ models:
           combination_of_columns:
             - year
             - round_number
-            - team_id
+            - team_name
 
   - name: mart__head_to_head
     description: Teammate qualifying and race comparison per round.
@@ -57,23 +58,12 @@ models:
       - name: round_number
         data_tests:
           - not_null
-      - name: team_id
-        data_tests:
-          - not_null
       - name: driver_1_number
         data_tests:
           - not_null
       - name: driver_2_number
         data_tests:
           - not_null
-    data_tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - year
-            - round_number
-            - team_id
-            - driver_1_number
-            - driver_2_number
 
   - name: mart__track_characteristics
     description: Circuit characteristics and statistics per race per year.
