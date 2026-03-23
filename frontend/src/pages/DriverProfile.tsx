@@ -10,10 +10,11 @@ import {
 
 export default function DriverProfile() {
   const { abbreviation } = useParams<{ abbreviation: string }>();
-  const { data: driverStandings = [] } = useDriverStandings(2024);
-  const { data: constructorStandings = [] } = useConstructorStandings(2024);
-  const { data: recentResults = [] } = useRecentResults(2024);
-  const { data: evo } = useDriverStandingsEvolution(2024);
+  const currentYear = new Date().getFullYear();
+  const { data: driverStandings = [] } = useDriverStandings(currentYear);
+  const { data: constructorStandings = [] } = useConstructorStandings(currentYear);
+  const { data: recentResults = [] } = useRecentResults(currentYear);
+  const { data: evo } = useDriverStandingsEvolution(currentYear);
 
   const driver = driverStandings.find((d) => d.abbreviation === abbreviation?.toUpperCase());
 

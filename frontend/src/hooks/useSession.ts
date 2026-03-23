@@ -13,19 +13,23 @@ import {
   fetchSessionFastestLaps,
 } from "@/lib/api";
 
-function sessionQuery<T>(key: string, sessionId: number | null, fn: (id: number) => Promise<T>) {
+function sessionQuery<T>(
+  key: string,
+  sessionId: number | null,
+  fn: (id: number) => Promise<T>,
+  enabled = true
+) {
   return useQuery<T>({
     queryKey: [key, sessionId],
     queryFn: () => fn(sessionId!),
-    enabled: sessionId !== null,
+    enabled: sessionId !== null && enabled,
     staleTime: 60_000,
   });
 }
 
-export function useSessionLeaderboard(sessionId: number | null) {
+export function useSessionLeaderboard(sessionId: number | null, enabled = true) {
   return sessionQuery("leaderboard", sessionId, async (id) => {
     const data = await fetchSessionLeaderboard(id);
-    // Transform to match SessionEntry interface
     return data.map((e: any) => ({
       position: e.position,
       driver: e.driver,
@@ -43,45 +47,45 @@ export function useSessionLeaderboard(sessionId: number | null) {
       tyre: "SOFT" as const,
       laps: e.laps ?? 0,
     }));
-  });
+  }, enabled);
 }
 
-export function useSessionLaps(sessionId: number | null) {
-  return sessionQuery("laps", sessionId, fetchSessionLaps);
+export function useSessionLaps(sessionId: number | null, enabled = true) {
+  return sessionQuery("laps", sessionId, fetchSessionLaps, enabled);
 }
 
-export function useSessionPositions(sessionId: number | null) {
-  return sessionQuery("positions", sessionId, fetchSessionPositions);
+export function useSessionPositions(sessionId: number | null, enabled = true) {
+  return sessionQuery("positions", sessionId, fetchSessionPositions, enabled);
 }
 
-export function useSessionGaps(sessionId: number | null) {
-  return sessionQuery("gaps", sessionId, fetchSessionGaps);
+export function useSessionGaps(sessionId: number | null, enabled = true) {
+  return sessionQuery("gaps", sessionId, fetchSessionGaps, enabled);
 }
 
-export function useSessionWeather(sessionId: number | null) {
-  return sessionQuery("weather", sessionId, fetchSessionWeather);
+export function useSessionWeather(sessionId: number | null, enabled = true) {
+  return sessionQuery("weather", sessionId, fetchSessionWeather, enabled);
 }
 
-export function useSessionStints(sessionId: number | null) {
-  return sessionQuery("stints", sessionId, fetchSessionStints);
+export function useSessionStints(sessionId: number | null, enabled = true) {
+  return sessionQuery("stints", sessionId, fetchSessionStints, enabled);
 }
 
-export function useSessionPitStops(sessionId: number | null) {
-  return sessionQuery("pitStops", sessionId, fetchSessionPitStops);
+export function useSessionPitStops(sessionId: number | null, enabled = true) {
+  return sessionQuery("pitStops", sessionId, fetchSessionPitStops, enabled);
 }
 
-export function useSessionRaceControl(sessionId: number | null) {
-  return sessionQuery("raceControl", sessionId, fetchSessionRaceControl);
+export function useSessionRaceControl(sessionId: number | null, enabled = true) {
+  return sessionQuery("raceControl", sessionId, fetchSessionRaceControl, enabled);
 }
 
-export function useSessionRadio(sessionId: number | null) {
-  return sessionQuery("radio", sessionId, fetchSessionRadio);
+export function useSessionRadio(sessionId: number | null, enabled = true) {
+  return sessionQuery("radio", sessionId, fetchSessionRadio, enabled);
 }
 
-export function useSessionSpeedTraps(sessionId: number | null) {
-  return sessionQuery("speedTraps", sessionId, fetchSessionSpeedTraps);
+export function useSessionSpeedTraps(sessionId: number | null, enabled = true) {
+  return sessionQuery("speedTraps", sessionId, fetchSessionSpeedTraps, enabled);
 }
 
-export function useSessionFastestLaps(sessionId: number | null) {
-  return sessionQuery("fastestLaps", sessionId, fetchSessionFastestLaps);
+export function useSessionFastestLaps(sessionId: number | null, enabled = true) {
+  return sessionQuery("fastestLaps", sessionId, fetchSessionFastestLaps, enabled);
 }

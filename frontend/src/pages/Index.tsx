@@ -77,18 +77,23 @@ export default function Index() {
     : sessionList.find((s) => s.type === "Race") ?? sessionList[0];
   const sessionId = resolvedSession?.sessionId ?? null;
 
-  // Data hooks - session level (only fetch when sessionId is resolved)
-  const { data: leaderboard = [] } = useSessionLeaderboard(sessionId);
-  const { data: positions = [] } = useSessionPositions(sessionId);
-  const { data: gaps = [] } = useSessionGaps(sessionId);
-  const { data: lapTimes = [] } = useSessionLaps(sessionId);
-  const { data: weather = [] } = useSessionWeather(sessionId);
-  const { data: stints = [] } = useSessionStints(sessionId);
-  const { data: pitStops = [] } = useSessionPitStops(sessionId);
-  const { data: raceControl = [] } = useSessionRaceControl(sessionId);
-  const { data: radio = [] } = useSessionRadio(sessionId);
-  const { data: speedTraps = [] } = useSessionSpeedTraps(sessionId);
-  const { data: fastestLaps = [] } = useSessionFastestLaps(sessionId);
+  // Tab-aware session data fetching — only fetch data needed for the active tab
+  const isOverview = activeTab === "overview";
+  const isAnalysis = activeTab === "analysis";
+  const isStrategy = activeTab === "strategy";
+  const isRadio = activeTab === "radio";
+
+  const { data: leaderboard = [] } = useSessionLeaderboard(sessionId, isOverview);
+  const { data: positions = [] } = useSessionPositions(sessionId, isOverview || isAnalysis);
+  const { data: gaps = [] } = useSessionGaps(sessionId, isOverview || isAnalysis);
+  const { data: weather = [] } = useSessionWeather(sessionId, isOverview);
+  const { data: lapTimes = [] } = useSessionLaps(sessionId, isAnalysis);
+  const { data: speedTraps = [] } = useSessionSpeedTraps(sessionId, isAnalysis);
+  const { data: fastestLaps = [] } = useSessionFastestLaps(sessionId, isAnalysis);
+  const { data: stints = [] } = useSessionStints(sessionId, isStrategy);
+  const { data: pitStops = [] } = useSessionPitStops(sessionId, isStrategy);
+  const { data: raceControl = [] } = useSessionRaceControl(sessionId, isRadio);
+  const { data: radio = [] } = useSessionRadio(sessionId, isRadio);
 
   const selectedEvent = selectedRound ? events.find((e) => e.round === selectedRound) : null;
   const isSessionOrRound = selectedSession || (selectedRound && selectedEvent);

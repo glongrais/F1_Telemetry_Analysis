@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -42,9 +42,13 @@ export default function TelemetryPanel({ sessionId }: { sessionId: number | null
   }, [availableLaps, selectedLap]);
 
   const selectedDrivers: DriverTelemetry[] = telemetryData;
-  // Build available drivers list from leaderboard-like info (we only know selected)
-  const availableDriverCodes = ["VER", "NOR", "LEC", "PIA", "SAI", "HAM", "RUS", "PER", "ALO", "STR"]
-    .filter((d) => !selectedAbbrevs.includes(d));
+  // Available drivers come from telemetry response; show any not already selected
+  const knownDrivers = useMemo(() => {
+    const set = new Set(selectedAbbrevs);
+    telemetryData.forEach((d) => set.add(d.abbreviation));
+    return Array.from(set);
+  }, [selectedAbbrevs, telemetryData]);
+  const availableDriverCodes = knownDrivers.filter((d) => !selectedAbbrevs.includes(d));
 
   const addDriver = (abbrev: string) => {
     setSelectedAbbrevs((prev) => [...prev, abbrev]);
@@ -62,19 +66,22 @@ export default function TelemetryPanel({ sessionId }: { sessionId: number | null
     );
   };
 
-  // Merge telemetry data by distance
-  const mergedData = selectedDrivers[0]?.data.map((point, i) => {
-    const row: Record<string, number> = { distance: point.distance };
-    selectedDrivers.forEach((d) => {
-      const dp = d.data[i];
-      if (dp) {
-        allTraces.forEach((t) => {
-          row[`${d.abbreviation}_${t}`] = dp[t];
-        });
-      }
+  // Merge telemetry data by distance (memoized)
+  const mergedData = useMemo(() => {
+    if (!selectedDrivers[0]?.data) return [];
+    return selectedDrivers[0].data.map((point, i) => {
+      const row: Record<string, number> = { distance: point.distance };
+      selectedDrivers.forEach((d) => {
+        const dp = d.data[i];
+        if (dp) {
+          allTraces.forEach((t) => {
+            row[`${d.abbreviation}_${t}`] = dp[t];
+          });
+        }
+      });
+      return row;
     });
-    return row;
-  }) ?? [];
+  }, [selectedDrivers]);
 
   return (
     <div className="bg-card rounded-sm border border-border overflow-hidden">

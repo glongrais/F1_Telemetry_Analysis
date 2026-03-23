@@ -55,7 +55,8 @@ export default function StandingsEvolution({ year }: { year: number }) {
   const colors = evoData?.colors ?? {};
   const keys = Object.keys(colors);
 
-  const dashed = isDrivers ? new Set(["PIA", "RUS", "PER", "SAI"]) : new Set<string>();
+  // Dash lines for the second half of keys to improve visual distinction
+  const dashed = isDrivers ? new Set(keys.slice(Math.ceil(keys.length / 2))) : new Set<string>();
 
   if (data.length === 0) {
     return (

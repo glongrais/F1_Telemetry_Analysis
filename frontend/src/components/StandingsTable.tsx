@@ -1,14 +1,15 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Driver, Constructor } from "@/types/standings";
 import TeamLogo from "@/components/TeamLogo";
 
-export function DriverStandings({ drivers }: { drivers: Driver[] }) {
+export const DriverStandings = memo(function DriverStandings({ drivers }: { drivers: Driver[] }) {
   return (
     <div className="bg-card rounded-sm border border-border overflow-hidden">
       <div className="px-4 py-3 border-b border-border flex items-center justify-between">
         <h3 className="font-display text-sm font-bold uppercase tracking-wider">Driver Standings</h3>
-        <span className="text-[10px] text-muted-foreground uppercase tracking-widest">2024</span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{new Date().getFullYear()}</span>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">
@@ -47,16 +48,16 @@ export function DriverStandings({ drivers }: { drivers: Driver[] }) {
       </div>
     </div>
   );
-}
+});
 
-export function ConstructorStandings({ constructors }: { constructors: Constructor[] }) {
+export const ConstructorStandings = memo(function ConstructorStandings({ constructors }: { constructors: Constructor[] }) {
   const maxPoints = constructors[0]?.points ?? 1;
 
   return (
     <div className="bg-card rounded-sm border border-border overflow-hidden">
       <div className="px-4 py-3 border-b border-border flex items-center justify-between">
         <h3 className="font-display text-sm font-bold uppercase tracking-wider">Constructor Standings</h3>
-        <span className="text-[10px] text-muted-foreground uppercase tracking-widest">2024</span>
+        <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{new Date().getFullYear()}</span>
       </div>
       <div className="p-4 space-y-3">
         {constructors.map((c) => (
@@ -83,4 +84,4 @@ export function ConstructorStandings({ constructors }: { constructors: Construct
       </div>
     </div>
   );
-}
+});
