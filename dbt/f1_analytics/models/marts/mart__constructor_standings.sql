@@ -22,11 +22,11 @@ cumulative AS (
     SELECT
         *,
         SUM(team_race_points) OVER (
-            PARTITION BY year, team_id
+            PARTITION BY year, team_name
             ORDER BY round_number
         ) AS team_cumulative_points,
         SUM(team_wins_this_round) OVER (
-            PARTITION BY year, team_id
+            PARTITION BY year, team_name
             ORDER BY round_number
         ) AS team_cumulative_wins
     FROM team_round

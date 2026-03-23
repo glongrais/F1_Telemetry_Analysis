@@ -1,6 +1,27 @@
 WITH
 race_results AS (SELECT * FROM {{ ref('int__race_results') }}),
 
+round_summary AS (
+    SELECT
+        MAX(CASE WHEN session_type = 'Race' THEN session_id END) AS session_id,
+        year,
+        round_number,
+        MAX(event_name) AS event_name,
+        MAX(country) AS country,
+        MAX(location) AS location,
+        driver_number,
+        MAX(driver_code) AS driver_code,
+        MAX(full_name) AS full_name,
+        MAX(team_name) AS team_name,
+        MAX(team_id) AS team_id,
+        MAX(CASE WHEN session_type = 'Race' THEN finish_position END) AS finish_position,
+        SUM(points) AS points,
+        MAX(CASE WHEN session_type = 'Race' THEN is_dnf END) AS is_dnf,
+        MAX(CASE WHEN session_type = 'Race' THEN positions_gained END) AS positions_gained
+    FROM race_results
+    GROUP BY year, round_number, driver_number
+),
+
 cumulative AS (
     SELECT
         session_id,
@@ -34,7 +55,7 @@ cumulative AS (
             PARTITION BY year, driver_number
             ORDER BY round_number
         ) AS cumulative_dnfs
-    FROM race_results
+    FROM round_summary
 )
 
 SELECT
