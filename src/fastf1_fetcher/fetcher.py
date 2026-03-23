@@ -10,32 +10,18 @@ logging.basicConfig(level=logging.ERROR)
 logging.getLogger("fastf1").setLevel(logging.ERROR)
 
 import os
-import db_writer
-import db_reader
-from schema import DB_PATH
+import sys
+
+# Add shared module to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+from shared import SESSION_TYPE_ORDINALS, make_event_id, make_session_id  # noqa: E402
+
+import db_writer  # noqa: E402
+import db_reader  # noqa: E402
+from schema import DB_PATH  # noqa: E402
 
 CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'data', 'fastf1_cache')
 MAX_WORKERS = 4
-
-SESSION_TYPE_ORDINALS = {
-    "Practice 1": 1,
-    "Practice 2": 2,
-    "Practice 3": 3,
-    "Qualifying": 4,
-    "Sprint Qualifying": 5,
-    "Sprint Shootout": 5,
-    "Sprint": 6,
-    "Race": 7,
-}
-
-
-def make_event_id(year, round_number):
-    return year * 100 + round_number
-
-
-def make_session_id(event_id, session_type):
-    ordinal = SESSION_TYPE_ORDINALS.get(session_type, 0)
-    return event_id * 10 + ordinal
 
 
 def _load_session(year, round_number, session_type):
@@ -260,12 +246,11 @@ class FastF1Fetcher:
                 except Exception as e:
                     print(f"    Warning: intervals failed: {e}")
 
-            conn.commit()
             db_writer.insert_ingestion_log(
                 conn, session_id, event_id, year, round_number,
                 session_type, status="complete",
             )
-            conn.commit()
+            conn.commit()  # single atomic commit for all session data + log
             tqdm.write(f"    Done: {event_name} {session_type}")
 
         except Exception as e:

@@ -1,8 +1,11 @@
 import base64
 import json
+import logging
 import re
 import zlib
 from typing import List, Tuple
+
+logger = logging.getLogger(__name__)
 
 _LINE_RE = re.compile(r"^(\d+):(\d+):(\d+\.?\d*)(.*)")
 
@@ -28,7 +31,8 @@ def parse_jsonstream(text):
             continue
         try:
             payload = json.loads(raw)
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.debug("Skipping malformed JSON at timestamp %.3f: %s", ts, e)
             continue
         results.append((ts, payload))
     return results
@@ -58,7 +62,8 @@ def parse_compressed_jsonstream(text):
         try:
             decompressed = decompress_payload(b64_payload)
             payload = json.loads(decompressed)
-        except Exception:
+        except Exception as e:
+            logger.debug("Skipping malformed compressed entry at timestamp %.3f: %s", ts, e)
             continue
         results.append((ts, payload))
     return results

@@ -260,12 +260,11 @@ class LivetimingFetcher:
                 except Exception as e:
                     tqdm.write(f"    Warning: intervals failed for {info.event_name} {info.session_type}: {e}")
 
-            conn.commit()
             db_writer.insert_ingestion_log(
                 conn, info.session_id, info.event_id, info.year,
                 info.round_number, info.session_type, status="complete",
             )
-            conn.commit()
+            conn.commit()  # single atomic commit for all session data + log
             tqdm.write(f"    Done: {info.event_name} {info.session_type}")
 
         except Exception as e:
@@ -292,6 +291,28 @@ class LivetimingFetcher:
         if not failed:
             print("No failed sessions to retry.")
             return
-        # Re-fetch session info from schedule for failed sessions
-        # For simplicity, just log and skip (user can re-run with --round)
-        print(f"Found {len(failed)} failed sessions. Re-run with --round to retry specific rounds.")
+
+        print(f"Retrying {len(failed)} failed sessions...")
+        # Build SessionInfo from failed rows + schedule lookup
+        schedule_cache = {}  # year -> [SessionInfo]
+        tasks = []
+        for row in failed:
+            session_id, event_id, year, round_number, session_type, _ = row
+            if year not in schedule_cache:
+                try:
+                    schedule_cache[year] = get_season_sessions(year)
+                except Exception as e:
+                    print(f"  Could not fetch schedule for {year}: {e}")
+                    schedule_cache[year] = []
+            # Find matching SessionInfo from schedule
+            info = next(
+                (s for s in schedule_cache[year] if s.session_id == session_id),
+                None,
+            )
+            if info:
+                tasks.append(info)
+            else:
+                print(f"  Could not find schedule entry for session {session_id}, skipping.")
+
+        if tasks:
+            self._process_tasks(tasks)
