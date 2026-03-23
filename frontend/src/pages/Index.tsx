@@ -52,7 +52,7 @@ const sessionTabs: { id: SessionTab; label: string }[] = [
 
 export default function Index() {
   const [collapsed, setCollapsed] = useState(false);
-  const [selectedSeason, setSelectedSeason] = useState(2024);
+  const [selectedSeason, setSelectedSeason] = useState(new Date().getFullYear());
   const [selectedRound, setSelectedRound] = useState<number | null>(null);
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<SessionTab>("overview");
