@@ -5,18 +5,16 @@ import { useEvents } from "@/hooks/useEvents";
 import { countryFlag } from "@/lib/countryFlag";
 import { getCircuitByCountry } from "@/data/circuitData";
 
+// Parse "YYYY-MM-DD" as local date (not UTC) by replacing hyphens
+function parseLocalDate(dateStr: string): Date {
+  return new Date(dateStr.replace(/-/g, "/"));
+}
+
 function getNextEvent(events: any[]) {
   const now = new Date();
-  const upcoming = events.find((e) => new Date(e.date) > now);
+  const upcoming = events.find((e) => parseLocalDate(e.date) > now);
   if (upcoming) return upcoming;
-  // Fallback: use the last event with a future-shifted date
-  if (events.length > 0) {
-    const last = events[events.length - 1];
-    const d = new Date();
-    d.setDate(d.getDate() + 3);
-    return { ...last, date: d.toISOString().slice(0, 10) };
-  }
-  return null;
+  return events.length > 0 ? events[events.length - 1] : null;
 }
 
 interface TimeLeft {
@@ -27,7 +25,7 @@ interface TimeLeft {
 }
 
 function calcTimeLeft(targetDate: string): TimeLeft {
-  const diff = Math.max(0, new Date(targetDate).getTime() - Date.now());
+  const diff = Math.max(0, parseLocalDate(targetDate).getTime() - Date.now());
   return {
     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
     hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -69,7 +67,7 @@ export default function NextRaceCountdown() {
     );
   }
 
-  const raceDate = new Date(event.date);
+  const raceDate = parseLocalDate(event.date);
   const formattedDate = raceDate.toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",
