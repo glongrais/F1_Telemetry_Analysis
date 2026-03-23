@@ -50,7 +50,7 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 }
 
 export default function NextRaceCountdown() {
-  const { data: events = [] } = useEvents(2024);
+  const { data: events = [] } = useEvents(new Date().getFullYear());
   const event = getNextEvent(events);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
