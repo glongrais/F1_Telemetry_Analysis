@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 
-from api.db import query
+from api.db import query, format_lap_time, format_gap
 
 router = APIRouter()
 
@@ -8,7 +8,6 @@ router = APIRouter()
 @router.get("/session/{session_id}/leaderboard")
 def session_leaderboard(session_id: int):
     """Return leaderboard for qualifying or race session."""
-    # Determine session type
     session_info = query(
         "SELECT session_type FROM sessions WHERE session_id = ?", [session_id]
     )
@@ -23,7 +22,7 @@ def session_leaderboard(session_id: int):
         return _race_leaderboard(session_id)
 
 
-def _qualifying_leaderboard(session_id: int) -> list[dict]:
+def _qualifying_leaderboard(session_id: int) -> list:
     rows = query(
         """
         SELECT
@@ -31,7 +30,7 @@ def _qualifying_leaderboard(session_id: int) -> list[dict]:
             q.full_name AS driver,
             q.driver_code AS abbreviation,
             q.team_name AS team,
-            '#' || d.team_color AS "teamColor",
+            '#' || LTRIM(d.team_color, '#') AS "teamColor",
             q.q1,
             q.q2,
             q.q3,
@@ -54,18 +53,18 @@ def _qualifying_leaderboard(session_id: int) -> list[dict]:
             "abbreviation": row["abbreviation"],
             "team": row["team"],
             "teamColor": row["teamColor"],
-            "bestLap": _format_lap_time(row["bestLap"]),
-            "gapToLeader": _format_gap(row["gapToLeader"]),
-            "sector1": {"time": _format_lap_time(row["q1"]), "status": "normal"},
-            "sector2": {"time": _format_lap_time(row["q2"]), "status": "normal"},
-            "sector3": {"time": _format_lap_time(row["q3"]), "status": "normal"},
+            "bestLap": format_lap_time(row["bestLap"]),
+            "gapToLeader": format_gap(row["gapToLeader"]),
+            "sector1": {"time": format_lap_time(row["q1"]), "status": "normal"},
+            "sector2": {"time": format_lap_time(row["q2"]), "status": "normal"},
+            "sector3": {"time": format_lap_time(row["q3"]), "status": "normal"},
             "laps": 0,
         }
         result.append(entry)
     return result
 
 
-def _race_leaderboard(session_id: int) -> list[dict]:
+def _race_leaderboard(session_id: int) -> list:
     rows = query(
         """
         SELECT
@@ -73,7 +72,7 @@ def _race_leaderboard(session_id: int) -> list[dict]:
             r.full_name AS driver,
             r.driver_code AS abbreviation,
             r.team_name AS team,
-            '#' || d.team_color AS "teamColor",
+            '#' || LTRIM(d.team_color, '#') AS "teamColor",
             r.status,
             r.laps_completed AS laps,
             r.points,
@@ -125,7 +124,6 @@ def session_laps(session_id: int):
         """,
         [session_id],
     )
-    # Pivot into {lap, VER: seconds, NOR: seconds, ...}
     pivoted = {}
     for row in rows:
         key = row["lap"]
@@ -186,7 +184,7 @@ def session_gaps(session_id: int):
                 AND g.gap_to_leader_seconds IS NOT NULL
             QUALIFY ROW_NUMBER() OVER (
                 PARTITION BY lt.lap_number, g.driver_number
-                ORDER BY ABS(EPOCH(g.timestamp) - EPOCH(lt.lap_end_time))
+                ORDER BY ABS(g.timestamp - lt.lap_end_time)
             ) = 1
         )
         SELECT lap, driver, gap
@@ -238,7 +236,6 @@ def session_weather(session_id: int):
         """,
         [session_id],
     )
-    # Add approximate lap numbers
     for i, row in enumerate(rows):
         row["lap"] = i + 1
         row["timestamp"] = str(row["timestamp"])
@@ -251,7 +248,7 @@ def session_stints(session_id: int):
         """
         SELECT
             d.driver_code AS abbreviation,
-            '#' || d.team_color AS "teamColor",
+            '#' || LTRIM(d.team_color, '#') AS "teamColor",
             d.full_name AS driver,
             st.stint,
             st.compound,
@@ -266,7 +263,6 @@ def session_stints(session_id: int):
         """,
         [session_id],
     )
-    # Group by driver
     drivers = {}
     for row in rows:
         abbr = row["abbreviation"]
@@ -294,24 +290,32 @@ def session_stints(session_id: int):
 def session_pit_stops(session_id: int):
     rows = query(
         """
-        WITH pit_data AS (
+        WITH pit_ins AS (
+            SELECT session_id, driver_number, lap_number AS lap, pit_in_time
+            FROM int__pit_stops
+            WHERE session_id = ? AND pit_in_time IS NOT NULL
+        ),
+        pit_outs AS (
+            SELECT session_id, driver_number, lap_number AS lap, pit_out_time
+            FROM int__pit_stops
+            WHERE session_id = ? AND pit_out_time IS NOT NULL
+        ),
+        pit_data AS (
             SELECT
-                p.session_id,
-                p.driver_number,
-                p.lap_number AS lap,
-                p.pit_in_time,
-                p.pit_out_time,
-                EXTRACT(EPOCH FROM (p.pit_out_time - p.pit_in_time)) AS duration
-            FROM int__pit_stops p
-            WHERE p.session_id = ?
-                AND p.pit_in_time IS NOT NULL
-                AND p.pit_out_time IS NOT NULL
+                pi.session_id,
+                pi.driver_number,
+                pi.lap,
+                (po.pit_out_time - pi.pit_in_time) AS duration
+            FROM pit_ins pi
+            JOIN pit_outs po ON pi.session_id = po.session_id
+                AND pi.driver_number = po.driver_number
+                AND po.lap = pi.lap + 1
         )
         SELECT
             pd.lap,
             d.driver_code AS abbreviation,
             d.full_name AS driver,
-            '#' || d.team_color AS "teamColor",
+            '#' || LTRIM(d.team_color, '#') AS "teamColor",
             pd.duration,
             before_stint.compound AS "tyreFrom",
             after_stint.compound AS "tyreTo"
@@ -326,7 +330,7 @@ def session_pit_stops(session_id: int):
             AND pd.lap + 1 BETWEEN after_stint.lap_start AND after_stint.lap_end
         ORDER BY pd.lap, d.driver_code
         """,
-        [session_id],
+        [session_id, session_id],
     )
     for row in rows:
         if row["duration"] is not None:
@@ -353,7 +357,6 @@ def session_race_control(session_id: int):
         """,
         [session_id],
     )
-    # Map incident_type to frontend category enum
     category_map = {
         "SafetyCar": "SAFETY_CAR",
         "VSC": "VSC",
@@ -382,7 +385,7 @@ def session_radio(session_id: int):
             d.driver_code AS abbreviation,
             d.full_name AS driver,
             d.team_name AS team,
-            '#' || d.team_color AS "teamColor",
+            '#' || LTRIM(d.team_color, '#') AS "teamColor",
             trt.transcription AS message,
             tr.recording_url AS "audioUrl"
         FROM team_radio tr
@@ -397,7 +400,7 @@ def session_radio(session_id: int):
     )
     for row in rows:
         row["timestamp"] = str(row["timestamp"])
-        row["lap"] = 0  # Approximate - could correlate with lap timestamps
+        row["lap"] = 0
     return rows
 
 
@@ -407,7 +410,7 @@ def session_speed_traps(session_id: int):
         """
         SELECT
             l.driver_code AS abbreviation,
-            '#' || d.team_color AS "teamColor",
+            '#' || LTRIM(d.team_color, '#') AS "teamColor",
             MAX(l.speed_i1) AS "speedTrap1",
             MAX(l.speed_i2) AS "speedTrap2",
             MAX(l.speed_fl) AS "speedTrap3",
@@ -438,7 +441,7 @@ def session_fastest_laps(session_id: int):
             SELECT
                 l.driver_code AS abbreviation,
                 d.team_name AS team,
-                '#' || d.team_color AS "teamColor",
+                '#' || LTRIM(d.team_color, '#') AS "teamColor",
                 l.lap_number AS "lapNumber",
                 l.lap_time AS "lapTime",
                 l.sector_1_time AS sector1,
@@ -477,26 +480,8 @@ def session_fastest_laps(session_id: int):
     for row in rows:
         gap = row["lapTime"] - fastest if fastest and row["lapTime"] else None
         row["gap"] = f"+{gap:.3f}" if gap and gap > 0 else ""
-        row["lapTime"] = _format_lap_time(row["lapTime"])
-        row["sector1"] = _format_lap_time(row["sector1"])
-        row["sector2"] = _format_lap_time(row["sector2"])
-        row["sector3"] = _format_lap_time(row["sector3"])
+        row["lapTime"] = format_lap_time(row["lapTime"])
+        row["sector1"] = format_lap_time(row["sector1"])
+        row["sector2"] = format_lap_time(row["sector2"])
+        row["sector3"] = format_lap_time(row["sector3"])
     return rows
-
-
-def _format_lap_time(seconds) -> str:
-    if seconds is None:
-        return ""
-    minutes = int(seconds // 60)
-    secs = seconds - minutes * 60
-    if minutes > 0:
-        return f"{minutes}:{secs:06.3f}"
-    return f"{secs:.3f}"
-
-
-def _format_gap(seconds) -> str:
-    if seconds is None:
-        return ""
-    if seconds == 0:
-        return ""
-    return f"+{seconds:.3f}"
