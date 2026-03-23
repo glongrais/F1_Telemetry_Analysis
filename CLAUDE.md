@@ -108,8 +108,9 @@ Materializations: staging = view, intermediate = view, marts = table.
 - `compound` includes string `'None'` for unknown tyres alongside `'UNKNOWN'` and `'TEST_UNKNOWN'`.
 - `grid_position = 0` means pit lane start — NULL out `positions_gained`.
 - Driver `status` values: `'Finished'`, `'Lapped'`, `'Retired'`, `'Disqualified'`, `'Did not start'`, `''` (empty string).
-- Sprint sessions exist (`Sprint`, `Sprint Qualifying`, `Sprint Shootout`) — standings models currently exclude sprint points.
-- Livetiming data (`source='livetiming'`) has NULL `team_id`, `driver_id`, `country_code` — dbt `not_null` tests on `mart__constructor_standings.team_id` will fail (2 tests).
+- Sprint sessions exist (`Sprint`, `Sprint Qualifying`, `Sprint Shootout`) — standings models include sprint points (race: 25-18-15-12-10-8-6-4-2-1, sprint: 8-7-6-5-4-3-2-1). Wins/podiums count race sessions only.
+- Livetiming data has NULL `team_id`, `driver_id`, `country_code`, AND `points` — dbt computes points from `finish_position` via COALESCE fallback in `int__race_results`. `not_null` tests on `mart__constructor_standings.team_id` will fail (2 tests).
+- Constructor standings partition by `team_name` (not `team_id`) to handle NULL team_ids from livetiming.
 - F1 livetiming API returns UTF-8 BOM — must decode with `utf-8-sig`.
 - `.z` topics (CarData, Position) use raw deflate: `zlib.decompress(data, -zlib.MAX_WBITS)`, not plain `zlib.decompress()`.
 - Position.z structure: `{"Position": [{"Timestamp": "...", "Entries": {...}}]}` — differs from CarData.z: `{"Entries": [{"Utc": "...", "Cars": {...}}]}`.
@@ -122,6 +123,8 @@ Materializations: staging = view, intermediate = view, marts = table.
 - DB `country` column stores full names (`'Bahrain'`); API converts to ISO codes (`'BH'`) for frontend flag rendering.
 - `car_data` table is very large — telemetry endpoint requires `drivers` + `lap` query params.
 - Python venv is Python 3.9 — use `from typing import List, Optional` instead of `list | None` syntax.
-- Static data not in DB (kept as .ts files): `circuitData.ts`, `trackData.ts`, `raceAnalysis.ts` (driver colors), team logos, circuit mappings.
+- Static data not in DB (kept as .ts files): `circuitData.ts`, `raceAnalysis.ts` (driver colors), team logos.
+- Circuit links use `getCircuitByCountry(countryCode)` from `circuitData.ts` — no round-number mapping (rounds change yearly).
+- Frontend/API year defaults: use `new Date().getFullYear()` in components, not hardcoded years. Watch for hardcoded `2024` in new code.
 - TypeScript interfaces live in `frontend/src/types/` (`standings.ts`, `session.ts`, `analysis.ts`), not in data files.
 - Python deps are pinned in `requirements.txt` — update pins after upgrading packages.
